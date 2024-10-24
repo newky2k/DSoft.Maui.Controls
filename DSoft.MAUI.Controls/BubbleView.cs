@@ -38,7 +38,6 @@ namespace DSoft.Maui.Controls
 
         #endregion
 
-
         #region BorderColor
 
         public static readonly BindableProperty BorderColorProperty = BindableProperty.Create(

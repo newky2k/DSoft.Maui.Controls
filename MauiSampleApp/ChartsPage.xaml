@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiSampleApp.ChartsPage"
+             xmlns:controls="http://dsoft.maui/schemas/controls"
+             Title="ChartsPage">
+    <ScrollView>
+        <VerticalStackLayout>
+            <!-- Place new controls here -->
+            <controls:SingleRingChartView Value="91" MinValue="50" RingLineWidth="12" HasDropShadow="True" DropShadowDepth="4" RingBackgroundColor="Gray">
+                <controls:SingleRingChartView.CenterView>
+                    <Grid BackgroundColor="Red" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="Hello" />
+                    </Grid>
+                </controls:SingleRingChartView.CenterView>
+            </controls:SingleRingChartView>
+            <!--<controls:RingChartView ItemsSource="{Binding Data}" RingLineWidth="12" HasDropShadow="True" DropShadowDepth="4">
+            <controls:RingChartView.CenterView>
+                <Grid BackgroundColor="Red" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="Hello" />
+                </Grid>
+            </controls:RingChartView.CenterView>
+        </controls:RingChartView>-->
+            <!--<controls:SimpleRadialGuageView WidthRequest="200"
+                                        HeightRequest="200"
+                                        Percent="10"
+                                        ScaleBackgroundColor="Pink"
+                                        ScaleForegroundColor="Red"
+                                        ScaleBackgroundLineWidth="5"
+                                        ScaleForegroundLineWidth="5">
+            <controls:SimpleRadialGuageView.CenterContent>
+                <Grid BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="Hello" />
+                </Grid>
+            </controls:SimpleRadialGuageView.CenterContent>
+        </controls:SimpleRadialGuageView>
+
+        <controls:SimpleDonutGuageView WidthRequest="200"
+                                        HeightRequest="200"
+                                        Percent="10"
+                                        ScaleBackgroundColor="LightBlue"
+                                        ScaleForegroundColor="DarkSlateBlue"
+                                        ScaleBackgroundLineWidth="20"
+                                        ScaleForegroundLineWidth="20" />-->
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

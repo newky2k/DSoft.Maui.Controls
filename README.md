@@ -43,7 +43,7 @@ DSoft.Maui.Controls is a MAUI library so requires no dependency injection calls 
 You will need to add a namespace reference to your xaml file
 
 ```csharp
-  xmlns:mauic="clr-namespace:DSoft.Maui.Controls;assembly=DSoft.Maui.Controls"  
+  xmlns:mauic="http://dsoft.maui/schemas/controls"  
 ```
 
 ## PanPinchContainer (from Author)

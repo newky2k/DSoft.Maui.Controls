@@ -13,7 +13,7 @@
 		<Company>newky2k</Company>
 		<Copyright>newky2k</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageTags>maui pinch pan zoom image</PackageTags>
+		<PackageTags>maui controls image pinch zoom chart bubble</PackageTags>
 		<Description>MAUI controls library with Image pan and zoom functionality</Description>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>

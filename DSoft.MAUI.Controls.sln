@@ -8,12 +8,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{7E6E0FED-0AD
 		azure-pipelines-mergetest.yml = azure-pipelines-mergetest.yml
 		azure-pipelines-release.yml = azure-pipelines-release.yml
 		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSoft.Maui.Controls", "DSoft.MAUI.Controls\DSoft.Maui.Controls.csproj", "{A00A422D-4EA7-41ED-9AD1-147A951DA100}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiSampleApp", "MauiSampleApp\MauiSampleApp.csproj", "{7E3EB578-E2B3-499A-BB97-EFC2FBD9BB07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiSampleApp", "MauiSampleApp\MauiSampleApp.csproj", "{7E3EB578-E2B3-499A-BB97-EFC2FBD9BB07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
