@@ -4,10 +4,14 @@ Controls and Views for .NET MAUI
 
 Features:
 
-- Color Picker and Color Wheel Views
-- Gradient Frame
-- BubbleView(for notification counts)
-- SimpleRadialGuageView
+- `ColorPickView`
+- `ColorWheelView`
+- `GradientFrame`
+- `BubbleView`
+- `SimpleRadialGuageView`
+- `RingChartView`
+- `SimpleDonutGuageView`
+- `SingleRingChartView`
 
 This packages also just contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 

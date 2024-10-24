@@ -2,7 +2,7 @@
 namespace DSoft.Maui.Controls
 {
     /// <summary>
-    /// Pan & Pinch container view
+    /// Pan and Pinch container view
     /// </summary>
     /// <seealso cref="Microsoft.Maui.Controls.ContentView" />
     public class PanPinchContainer : ContentView
