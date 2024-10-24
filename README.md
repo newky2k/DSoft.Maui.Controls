@@ -1,6 +1,15 @@
-# DSoft.MAUI.Controls
+# DSoft.Maui.Controls
 
-This packages currently just contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer), but more items will be added as I migrate over my Xamarin controls and extensions
+Controls and Views for .NET MAUI
+
+Features:
+
+- Color Picker and Color Wheel Views
+- Gradient Frame
+- BubbleView(for notification counts)
+- SimpleRadialGuageView
+
+This packages also just contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
 Both views are 100% MAUI and do not rely on platform implementations.
 
@@ -15,7 +24,7 @@ Both views are 100% MAUI and do not rely on platform implementations.
 | ------------------- | ------------------- | 
 |DSoft.Maui.Controls|[![NuGet](https://buildstats.info/nuget/DSoft.Maui.Controls)](https://www.nuget.org/packages/DSoft.Maui.Controls)|
 
-# Usage
+# Setup
 
 Add the package from Nuget, either from NuGet Package Manager or command line
 
