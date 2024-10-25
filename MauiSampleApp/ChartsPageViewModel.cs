@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MauiSampleApp
 {
-    internal class ControlsPageViewModel : ViewModel
+    internal class ChartsPageViewModel : ViewModel
     {
         private IEnumerable<DataEntry> _data = new List<DataEntry>();
 
@@ -17,7 +17,7 @@ namespace MauiSampleApp
             set { _data = value; OnPropertyChanged(nameof(Data)); }
         }
 
-        public ControlsPageViewModel()
+        public ChartsPageViewModel()
         {
             Data = new List<DataEntry>()
                 {

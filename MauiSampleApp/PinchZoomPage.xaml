@@ -4,6 +4,9 @@
              x:Class="MauiSampleApp.PinchZoomPage"
              xmlns:mauic="http://dsoft.maui/schemas/controls"
              Title="PinchZoomPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
     <mauic:PanPinchContainer>
         <Image Source="dotnet_bot.png" />
     </mauic:PanPinchContainer>

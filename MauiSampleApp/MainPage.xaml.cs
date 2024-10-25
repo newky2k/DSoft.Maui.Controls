@@ -21,21 +21,21 @@
         {
             var dlg = new ChartsPage();
 
-            await Navigation.PushModalAsync(dlg);
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
         }
 
         private async void OnControlsClicked(object sender, EventArgs e)
         {
             var dlg = new ControlsPage();
 
-            await Navigation.PushModalAsync(dlg);
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
         }
 
         private async void OnPanZoomClicked(object sender, EventArgs e)
         {
             var dlg = new PinchZoomPage();
 
-            await Navigation.PushModalAsync(dlg);
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
 
         }
     }

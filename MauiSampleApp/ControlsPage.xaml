@@ -4,8 +4,12 @@
              x:Class="MauiSampleApp.ControlsPage"
              xmlns:mauic="http://dsoft.maui/schemas/controls"
              Title="ControlsPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
     <VerticalStackLayout>
-        <mauic:BubbleView Text="20" WidthRequest="75"  HeightRequest="24"/>
-        
+        <mauic:BubbleView Margin="0,10,0,0" Text="20" WidthRequest="75"  HeightRequest="24"/>
+        <mauic:BubbleView Margin="0,10,0,0" Text="200" WidthRequest="75"  HeightRequest="24"/>
+        <mauic:BubbleView Margin="0,10,0,0" Text="999999" WidthRequest="100"  HeightRequest="24"/>
     </VerticalStackLayout>
 </ContentPage>
