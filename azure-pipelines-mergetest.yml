@@ -12,8 +12,15 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  DotNetVersion: 8.0.402
 
-steps:  
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET sdk'
+  inputs:
+    packageType: 'sdk'
+    version: $(DotNetVersion)
+      
 - task: NuGetToolInstaller@1
   displayName: Install Latest Nuget
 

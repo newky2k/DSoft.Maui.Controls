@@ -19,11 +19,18 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  netVersion: '8.0.x'
+  DotNetVersion: 8.0.402
   releaseSuffix: '-prerelease'
 
 name: 2.0.$(date:yyMM).$(date:dd)$(rev:r)
 steps:
+
+- task: UseDotNet@2
+  displayName: 'Install .NET sdk'
+  inputs:
+    packageType: 'sdk'
+    version: $(DotNetVersion)
+      
 - task: NuGetToolInstaller@1
   displayName: Install Latest Nuget
 
