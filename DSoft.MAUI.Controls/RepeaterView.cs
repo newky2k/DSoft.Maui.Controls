@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DSoft.Maui.Controls
 {
-	public class RepeaterView : StackLayout
+	public class RepeaterView : VerticalStackLayout
 	{
 		public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(
 			nameof(ItemTemplate),

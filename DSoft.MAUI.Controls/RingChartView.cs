@@ -290,9 +290,7 @@ namespace DSoft.Maui.Controls
 		private void DrawRing(SKCanvas canvas, SKRect rect, SKColor backcolor, SKColor foreColor, float lineWidth, double percent)
 		{
 			var CurrentSweep = EndAngle * (percent / 100);
-
-
-
+			
 			var ArcPaintBack = new SKPaint
 			{
 				Style = SKPaintStyle.Stroke,
