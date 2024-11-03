@@ -11,15 +11,13 @@ namespace DSoft.Maui.Controls
 {
 	public class SimpleRadialGuageView : ContentView
 	{
-		#region fields and Properties
+		#region Fields and Properties
 
 		private readonly SKCanvasView _canvasView = new SKCanvasView();
-		private readonly Frame _container = new Frame()
+		
+		private readonly Grid _container = new Grid()
 		{
-			CornerRadius = 20,
-			HasShadow = false,
-			BackgroundColor = Colors.Transparent,
-
+			Padding = new Thickness(0, 0, 0, 0),
 		};
 
 		public double CurrentSweep => EndAngle * (Percent / 100);
@@ -129,8 +127,7 @@ namespace DSoft.Maui.Controls
 
 		#region StartAngle
 
-		public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(
-		   nameof(StartAngle), typeof(double), typeof(SimpleRadialGuageView), 120.0d, propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(nameof(StartAngle), typeof(double), typeof(SimpleRadialGuageView), 120.0d, propertyChanged: RedrawCanvas);
 
 		public double StartAngle
 		{
@@ -155,13 +152,12 @@ namespace DSoft.Maui.Controls
 
 		#region CenterContent
 
-		public static readonly BindableProperty CenterContentProperty = BindableProperty.Create(
-		   nameof(CenterContent), typeof(View), typeof(SimpleRadialGuageView), null, propertyChanged: null);
+		public static readonly BindableProperty CenterViewProperty = BindableProperty.Create(nameof(CenterView), typeof(View), typeof(SimpleRadialGuageView), null, propertyChanged: null);
 
-		public View CenterContent
+		public View CenterView
 		{
-			get => (View)GetValue(CenterContentProperty);
-			set => SetValue(CenterContentProperty, value);
+			get => (View)GetValue(CenterViewProperty);
+			set => SetValue(CenterViewProperty, value);
 		}
 
 		#endregion
@@ -172,8 +168,8 @@ namespace DSoft.Maui.Controls
 
 		public SimpleRadialGuageView()
 		{
-			HorizontalOptions = LayoutOptions.FillAndExpand;
-			VerticalOptions = LayoutOptions.FillAndExpand;
+			HorizontalOptions = LayoutOptions.Fill;
+			VerticalOptions = LayoutOptions.Fill;
 
 			_canvasView.PaintSurface += OnPaintSurface;
 
@@ -200,7 +196,11 @@ namespace DSoft.Maui.Controls
 			var currentPosy = this.Height / 2;
 			var newSize = this.Width - (this.Width / 3);
 
-			_container.Content = CenterContent;
+			if (CenterView != null)
+			{
+				_container.Children.Add(CenterView);
+			}
+
 			_container.LayoutTo(new Rect(currentPosX - (newSize / 2), currentPosy - (newSize / 2), newSize, newSize), 0, Easing.Linear);
 		}
 
@@ -224,9 +224,7 @@ namespace DSoft.Maui.Controls
 			var centery = surfaceHeight / 2;
 
 			var initialRadius = Math.Min(surfaceHeight, surfaceWidth) * 0.5f;
-
-
-
+			
 			var buffer = ScaleBackgroundLineWidth / 2;
 
 			var backradius = initialRadius - buffer;

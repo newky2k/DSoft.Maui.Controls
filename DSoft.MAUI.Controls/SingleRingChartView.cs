@@ -1,31 +1,22 @@
 ﻿using SkiaSharp.Views.Maui.Controls;
 using SkiaSharp.Views.Maui;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DSoft.Maui.Controls
 {
 	public class SingleRingChartView : ContentView
 	{
 		#region fields and Properties
-		private double StartAngle = 270;
-		private double EndAngle = 360;
+		private const double StartAngle = 270;
+		private const double EndAngle = 360;
 
 		private readonly SKCanvasView _canvasView = new SKCanvasView()
 		{
 			BackgroundColor = Colors.Transparent,
 		};
 
-		private readonly Frame _container = new Frame()
+		private readonly Grid _container = new Grid()
 		{
-			CornerRadius = 20,
-			HasShadow = false,
-			BackgroundColor = Colors.Transparent,
-			BorderColor = Colors.Transparent,
 			Padding = new Thickness(0, 0, 0, 0),
 		};
 
@@ -37,8 +28,7 @@ namespace DSoft.Maui.Controls
 
 		#region ScaleBackgroundColor
 
-		public static readonly BindableProperty RingBackgroundColorProperty = BindableProperty.Create(
-		   nameof(RingBackgroundColor), typeof(Color), typeof(SingleRingChartView), Color.FromRgba("#ebeced"), propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty RingBackgroundColorProperty = BindableProperty.Create(nameof(RingBackgroundColor), typeof(Color), typeof(SingleRingChartView), Color.FromRgba("#ebeced"), propertyChanged: RedrawCanvas);
 
 		public Color RingBackgroundColor
 		{
@@ -50,8 +40,7 @@ namespace DSoft.Maui.Controls
 
 		#region ScaleColor
 
-		public static readonly BindableProperty RingColorProperty = BindableProperty.Create(
-		   nameof(RingColor), typeof(Color), typeof(SingleRingChartView), Color.FromRgba("#ebeced"), propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty RingColorProperty = BindableProperty.Create(nameof(RingColor), typeof(Color), typeof(SingleRingChartView), Color.FromRgba("#ebeced"), propertyChanged: RedrawCanvas);
 
 		public Color RingColor
 		{
@@ -59,8 +48,7 @@ namespace DSoft.Maui.Controls
 			set => SetValue(RingColorProperty, value);
 		}
 
-		public static readonly BindableProperty UseShadedRingColorProperty = BindableProperty.Create(
-		   nameof(UseShadedRingColor), typeof(bool), typeof(SingleRingChartView), false, propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty UseShadedRingColorProperty = BindableProperty.Create(nameof(UseShadedRingColor), typeof(bool), typeof(SingleRingChartView), false, propertyChanged: RedrawCanvas);
 
 		public bool UseShadedRingColor
 		{
@@ -72,8 +60,7 @@ namespace DSoft.Maui.Controls
 
 		#region CenterView
 
-		public static readonly BindableProperty CenterViewProperty = BindableProperty.Create(
-		   nameof(CenterView), typeof(View), typeof(SingleRingChartView), null, propertyChanged: null);
+		public static readonly BindableProperty CenterViewProperty = BindableProperty.Create(nameof(CenterView), typeof(View), typeof(SingleRingChartView), null, propertyChanged: null);
 
 		public View CenterView
 		{
@@ -171,8 +158,8 @@ namespace DSoft.Maui.Controls
 
 		public SingleRingChartView()
 		{
-			HorizontalOptions = LayoutOptions.FillAndExpand;
-			VerticalOptions = LayoutOptions.FillAndExpand;
+			HorizontalOptions = LayoutOptions.Fill;
+			VerticalOptions = LayoutOptions.Fill;
 
 			_canvasView.PaintSurface += OnPaintSurface;
 
@@ -202,7 +189,11 @@ namespace DSoft.Maui.Controls
 			var currentPosy = this.Height / 2;
 			var newSize = this.Width - (this.Width / 3);
 
-			_container.Content = CenterView;
+			if (CenterView != null)
+			{
+				_container.Children.Add(CenterView);
+			}
+			
 			_container.LayoutTo(new Rect(currentPosX - (newSize / 2) + 1, currentPosy - (newSize / 2), newSize, newSize), 0, Easing.Linear);
 		}
 
@@ -233,14 +224,14 @@ namespace DSoft.Maui.Controls
 			var innerWidth = 0d;
 			var innerHeight = 0d;
 
-			if (_container.Content != null)
+			if (this.Content != null)
 			{
-				innerWidth = _container.Content.Width * scale;
-				innerHeight = _container.Content.Height * scale;
+				innerWidth = this.Content.Width * scale;
+				innerHeight = this.Content.Height * scale;
 			}
 
-			var centerx = surfaceWidth / 2;
-			var centery = surfaceHeight / 2;
+			var centerX = surfaceWidth / 2;
+			var centerY = surfaceHeight / 2;
 
 			var initialRadius = Math.Min(surfaceHeight, surfaceWidth);
 			var innerRadius = Math.Min(innerHeight, innerWidth);
@@ -253,26 +244,25 @@ namespace DSoft.Maui.Controls
 
 
 			var size = initialRadius - (innerRadius * 1.33);
+			
+			var maxLineWidth = (RingLineWidth > 0) ? (float)RingLineWidth : (float)(size / 2);
+			
 
-			var maxlineWidth = (RingLineWidth > 0) ? (float)RingLineWidth : (float)(size / 2);
-
-			var buffer = maxlineWidth;
-
-			var backradius = initialRadius - buffer;
-			var backleft = centerx - (backradius * 0.5f);
-			var backtop = centery - (backradius * 0.5f);
+			var backRadius = initialRadius - maxLineWidth;
+			var backLeft = centerX - (backRadius * 0.5f);
+			var backTop = centerY - (backRadius * 0.5f);
 
 			if (HasDropShadow == true)
 			{
-				backleft += DropShadowDepth;
-				backtop += DropShadowDepth;
+				backLeft += DropShadowDepth;
+				backTop += DropShadowDepth;
 			}
 
-			var backright = backleft + backradius;
-			var backbottom = backtop + backradius;
+			var backRight = backLeft + backRadius;
+			var backBottom = backTop + backRadius;
 
 			//Main rect
-			var rect = new SKRect(backleft, backtop, backright, backbottom);
+			var rect = new SKRect(backLeft, backTop, backRight, backBottom);
 
 			var foreColor = RingColor;
 
@@ -280,20 +270,18 @@ namespace DSoft.Maui.Controls
 
 			var perc = (Value - MinValue) / (MaxValue - MinValue) * 100;
 
-			DrawRing(canvas, rect, backColor.ToSKColor(), foreColor.ToSKColor(), maxlineWidth, perc);
+			DrawRing(canvas, rect, backColor.ToSKColor(), foreColor.ToSKColor(), maxLineWidth, perc);
 
-			rect.Inflate(new SKSize(-(maxlineWidth * 2), -(maxlineWidth * 2)));
+			rect.Inflate(new SKSize(-(maxLineWidth * 2), -(maxLineWidth * 2)));
 
 
 		}
 
 		private void DrawRing(SKCanvas canvas, SKRect rect, SKColor backcolor, SKColor foreColor, float lineWidth, double percent)
 		{
-			var CurrentSweep = EndAngle * (percent / 100);
-
-
-
-			var ArcPaintBack = new SKPaint
+			var currentSweep = EndAngle * (percent / 100);
+			
+			var arcPaintBack = new SKPaint
 			{
 				Style = SKPaintStyle.Stroke,
 				StrokeWidth = lineWidth,
@@ -302,21 +290,21 @@ namespace DSoft.Maui.Controls
 
 			};
 
-			var ArcPaintBackRound = new SKPaint
+			var arcPaintBackRound = new SKPaint
 			{
 				Style = SKPaintStyle.Fill,
 				Color = backcolor,
 				IsAntialias = true,
 			};
 
-			var ArcPaintRound = new SKPaint
+			var arcPaintRound = new SKPaint
 			{
 				Style = SKPaintStyle.Fill,
 				Color = foreColor,
 				IsAntialias = true,
 			};
 
-			var ArcPaint = new SKPaint()
+			var arcPaint = new SKPaint()
 			{
 				Style = SKPaintStyle.Stroke,
 				StrokeWidth = lineWidth,
@@ -326,9 +314,9 @@ namespace DSoft.Maui.Controls
 
 			if (HasDropShadow)
 			{
-				var RectangleStyleFillShadow = SKImageFilter.CreateDropShadow(0f, 0f, DropShadowDepth, DropShadowDepth, foreColor, null, null);
-				ArcPaintRound.ImageFilter = RectangleStyleFillShadow;
-				ArcPaint.ImageFilter = RectangleStyleFillShadow;
+				var rectangleStyleFillShadow = SKImageFilter.CreateDropShadow(0f, 0f, DropShadowDepth, DropShadowDepth, foreColor, null, null);
+				arcPaintRound.ImageFilter = rectangleStyleFillShadow;
+				arcPaint.ImageFilter = rectangleStyleFillShadow;
 
 			}
 
@@ -341,28 +329,28 @@ namespace DSoft.Maui.Controls
 			middlePoint.X = (rect.Left + radius);
 			middlePoint.Y = rect.Top + radius; //top of current circle plus radius
 
-			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(angle)), middlePoint.Y + (float)(radius * Math.Sin(angle)), lineWidth / 2, ArcPaintBackRound);
-			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(endangle)), middlePoint.Y + (float)(radius * Math.Sin(endangle)), lineWidth / 2, ArcPaintBackRound);
+			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(angle)), middlePoint.Y + (float)(radius * Math.Sin(angle)), lineWidth / 2, arcPaintBackRound);
+			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(endangle)), middlePoint.Y + (float)(radius * Math.Sin(endangle)), lineWidth / 2, arcPaintBackRound);
 
-			using (SKPath path = new SKPath())
+			using (var path = new SKPath())
 			{
 				path.AddArc(rect, (float)StartAngle, (float)EndAngle);
-				canvas.DrawPath(path, ArcPaintBack);
+				canvas.DrawPath(path, arcPaintBack);
 			}
 
 			angle = Math.PI * (StartAngle) / 180.0;
-			endangle = Math.PI * ((StartAngle + CurrentSweep)) / 180.0;
+			endangle = Math.PI * ((StartAngle + currentSweep)) / 180.0;
 
 
-			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(angle)), middlePoint.Y + (float)(radius * Math.Sin(angle)), lineWidth / 2, ArcPaintRound);
-			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(endangle)), middlePoint.Y + (float)(radius * Math.Sin(endangle)), lineWidth / 2, ArcPaintRound);
+			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(angle)), middlePoint.Y + (float)(radius * Math.Sin(angle)), lineWidth / 2, arcPaintRound);
+			canvas.DrawCircle(middlePoint.X + (float)(radius * Math.Cos(endangle)), middlePoint.Y + (float)(radius * Math.Sin(endangle)), lineWidth / 2, arcPaintRound);
 
 			using (SKPath path = new SKPath())
 			{
 
-				path.AddArc(rect, (float)StartAngle, (float)CurrentSweep);
+				path.AddArc(rect, (float)StartAngle, (float)currentSweep);
 
-				canvas.DrawPath(path, ArcPaint);
+				canvas.DrawPath(path, arcPaint);
 			}
 		}
 

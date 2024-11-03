@@ -12,7 +12,7 @@ namespace DSoft.Maui.Controls
 		{
 			StartAngle = 0;
 			EndAngle = 360;
-			Rotation = -90;
+			Rotation = 0;
 		}
 	}
 }
