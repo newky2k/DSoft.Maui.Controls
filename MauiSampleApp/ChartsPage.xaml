@@ -10,41 +10,53 @@
     <ScrollView>
         <VerticalStackLayout>
              <!-- Place new controls here -->
-            <controls:SingleRingChartView Value="91" MinValue="50" RingLineWidth="20" HasDropShadow="True" DropShadowDepth="4" RingBackgroundColor="Gray" WidthRequest="300" HeightRequest="300">
+            <controls:SingleRingChartView Value="91" MinValue="0" MaxValue="200" RingLineWidth="20" HasDropShadow="True" DropShadowDepth="4" RingBackgroundColor="Gray" WidthRequest="300" HeightRequest="300">
                 <controls:SingleRingChartView.CenterView>
-                    <Grid BackgroundColor="Red" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="100" HeightRequest="100">
-                        <Label Text="Hello" />
+                    <Grid BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center">
+                       <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                           <Label Text="91" FontSize="120" />
+                           <Label Text="Units" FontSize="32" HorizontalTextAlignment="Center" />
+                       </VerticalStackLayout>
                     </Grid>
                 </controls:SingleRingChartView.CenterView>
             </controls:SingleRingChartView>
             <controls:RingChartView ItemsSource="{Binding Data}" RingLineWidth="12" HasDropShadow="False" DropShadowDepth="4" WidthRequest="300" HeightRequest="300" Margin="0,10,0,0">
-            <controls:RingChartView.CenterView>
-                <Grid BackgroundColor="Red" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Label Text="Hello" />
-                </Grid>
-            </controls:RingChartView.CenterView>
+                <controls:RingChartView.CenterView>
+                    <Grid BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center">
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label Text="3.2/5.0" FontSize="64" />
+                            <Label Text="Air Quality" FontSize="32" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </controls:RingChartView.CenterView>
              </controls:RingChartView>
-            <controls:SimpleRadialGuageView WidthRequest="200" Margin="0,10,0,0"
-                                        HeightRequest="200"
-                                        Percent="10"
-                                        ScaleBackgroundColor="Pink"
-                                        ScaleForegroundColor="Red"
-                                        ScaleBackgroundLineWidth="5"
-                                        ScaleForegroundLineWidth="5">
-            <controls:SimpleRadialGuageView.CenterContent>
-                <Grid BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Label Text="Hello" />
-                </Grid>
-            </controls:SimpleRadialGuageView.CenterContent>
-        </controls:SimpleRadialGuageView>
+             <controls:SimpleRadialGaugeView WidthRequest="200" Margin="0,10,0,0"
+                                             HeightRequest="200"
+                                             Percent="10"
+                                             ScaleBackgroundColor="Pink"
+                                             ScaleForegroundColor="Red"
+                                             ScaleBackgroundLineWidth="5"
+                                             ScaleForegroundLineWidth="5">
+                <controls:SimpleRadialGaugeView.CenterView>
+                    <Grid BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="10%" FontSize="64"  />
+                    </Grid>
+                </controls:SimpleRadialGaugeView.CenterView>
+            </controls:SimpleRadialGaugeView>
 
-        <controls:SimpleDonutGuageView WidthRequest="200" Margin="0,10,0,0"
+        <controls:SimpleDonutGaugeView WidthRequest="200" Margin="0,10,0,0"
                                         HeightRequest="200"
                                         Percent="10"
                                         ScaleBackgroundColor="LightBlue"
                                         ScaleForegroundColor="DarkSlateBlue"
                                         ScaleBackgroundLineWidth="20"
-                                        ScaleForegroundLineWidth="20" />
+                                        ScaleForegroundLineWidth="20">
+            <controls:SimpleDonutGaugeView.CenterView>
+                <Grid BackgroundColor="Transparent" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="10%" FontSize="64"  />
+                </Grid>
+            </controls:SimpleDonutGaugeView.CenterView>
+        </controls:SimpleDonutGaugeView>
         </VerticalStackLayout>
         
     </ScrollView>

@@ -12,7 +12,8 @@ namespace DSoft.Maui.Controls
 {
 	public class RingChartView : ContentView
 	{
-		#region fields and Properties
+		#region Fields and Properties
+		
 		private List<DataEntryInternal> _internalData = new List<DataEntryInternal>();
 
 		private double StartAngle = 270;
@@ -23,15 +24,11 @@ namespace DSoft.Maui.Controls
 			BackgroundColor = Colors.Transparent,
 		};
 
-		private readonly Frame _container = new Frame()
+		private readonly Grid _container = new Grid()
 		{
-			CornerRadius = 20,
-			HasShadow = false,
-			BackgroundColor = Colors.Transparent,
-			BorderColor = Colors.Transparent,
 			Padding = new Thickness(0, 0, 0, 0),
 		};
-
+		
 		//public double CurrentSweep => EndAngle * (Percent / 100);
 
 		#endregion
@@ -163,8 +160,8 @@ namespace DSoft.Maui.Controls
 
 		public RingChartView()
 		{
-			HorizontalOptions = LayoutOptions.FillAndExpand;
-			VerticalOptions = LayoutOptions.FillAndExpand;
+			HorizontalOptions = LayoutOptions.Fill;
+			VerticalOptions = LayoutOptions.Fill;
 
 			_canvasView.PaintSurface += OnPaintSurface;
 
@@ -194,13 +191,17 @@ namespace DSoft.Maui.Controls
 			var currentPosy = this.Height / 2;
 			var newSize = this.Width - (this.Width / 3);
 
-			_container.Content = CenterView;
+			if (CenterView != null)
+			{
+				_container.Children.Add(CenterView);
+			}
+
 			_container.LayoutTo(new Rect(currentPosX - (newSize / 2) + 1, currentPosy - (newSize / 2), newSize, newSize), 0, Easing.Linear);
 		}
 
 		private static void RedrawCanvas(BindableObject bindable, object oldvalue, object newvalue)
 		{
-			RingChartView self = bindable as RingChartView;
+			var self = bindable as RingChartView;
 			self?._canvasView.InvalidateSurface();
 		}
 
@@ -208,8 +209,8 @@ namespace DSoft.Maui.Controls
 		{
 			//get the canvas & info
 			var canvas = args.Surface.Canvas;
-			int surfaceWidth = args.Info.Width;
-			int surfaceHeight = args.Info.Height;
+			var surfaceWidth = args.Info.Width;
+			var surfaceHeight = args.Info.Height;
 
 			if (HasDropShadow == true)
 			{
@@ -225,10 +226,10 @@ namespace DSoft.Maui.Controls
 			var innerWidth = 0d;
 			var innerHeight = 0d;
 
-			if (_container.Content != null)
+			if (Content != null)
 			{
-				innerWidth = _container.Content.Width * scale;
-				innerHeight = _container.Content.Height * scale;
+				innerWidth = Content.Width * scale;
+				innerHeight = Content.Height * scale;
 			}
 
 			var centerx = surfaceWidth / 2;
@@ -289,9 +290,7 @@ namespace DSoft.Maui.Controls
 		private void DrawRing(SKCanvas canvas, SKRect rect, SKColor backcolor, SKColor foreColor, float lineWidth, double percent)
 		{
 			var CurrentSweep = EndAngle * (percent / 100);
-
-
-
+			
 			var ArcPaintBack = new SKPaint
 			{
 				Style = SKPaintStyle.Stroke,

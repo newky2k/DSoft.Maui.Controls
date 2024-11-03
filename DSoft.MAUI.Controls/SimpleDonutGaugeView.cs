@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace DSoft.Maui.Controls
 {
-	public class SimpleDonutGuageView : SimpleRadialGuageView
+	public class SimpleDonutGaugeView : SimpleRadialGaugeView
 	{
-		public SimpleDonutGuageView() : base()
+		public SimpleDonutGaugeView() : base()
 		{
 			StartAngle = 0;
 			EndAngle = 360;
-			Rotation = -90;
+			Rotation = 0;
 		}
 	}
 }

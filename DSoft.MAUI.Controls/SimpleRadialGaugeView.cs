@@ -9,17 +9,15 @@ using System.Threading.Tasks;
 
 namespace DSoft.Maui.Controls
 {
-	public class SimpleRadialGuageView : ContentView
+	public class SimpleRadialGaugeView : ContentView
 	{
-		#region fields and Properties
+		#region Fields and Properties
 
 		private readonly SKCanvasView _canvasView = new SKCanvasView();
-		private readonly Frame _container = new Frame()
+		
+		private readonly Grid _container = new Grid()
 		{
-			CornerRadius = 20,
-			HasShadow = false,
-			BackgroundColor = Colors.Transparent,
-
+			Padding = new Thickness(0, 0, 0, 0),
 		};
 
 		public double CurrentSweep => EndAngle * (Percent / 100);
@@ -65,7 +63,7 @@ namespace DSoft.Maui.Controls
 		#region ScaleBackgroundColor
 
 		public static readonly BindableProperty ScaleBackgroundColorProperty = BindableProperty.Create(
-		   nameof(ScaleBackgroundColor), typeof(Color), typeof(SimpleRadialGuageView), Color.FromRgba("#343c44"), propertyChanged: RedrawCanvas);
+		   nameof(ScaleBackgroundColor), typeof(Color), typeof(SimpleRadialGaugeView), Color.FromRgba("#343c44"), propertyChanged: RedrawCanvas);
 
 		public Color ScaleBackgroundColor
 		{
@@ -78,7 +76,7 @@ namespace DSoft.Maui.Controls
 		#region ScaleBackgroundLineWidth
 
 		public static readonly BindableProperty ScaleBackgroundLineWidthProperty = BindableProperty.Create(
-		   nameof(ScaleBackgroundLineWidth), typeof(float), typeof(SimpleRadialGuageView), 30.0f, propertyChanged: RedrawCanvas);
+		   nameof(ScaleBackgroundLineWidth), typeof(float), typeof(SimpleRadialGaugeView), 30.0f, propertyChanged: RedrawCanvas);
 
 		public float ScaleBackgroundLineWidth
 		{
@@ -91,7 +89,7 @@ namespace DSoft.Maui.Controls
 		#region ScaleForegroundColor
 
 		public static readonly BindableProperty ScaleForegroundColorProperty = BindableProperty.Create(
-		   nameof(ScaleForegroundColor), typeof(Color), typeof(SimpleRadialGuageView), Color.FromRgba("#22b9e2"), propertyChanged: RedrawCanvas);
+		   nameof(ScaleForegroundColor), typeof(Color), typeof(SimpleRadialGaugeView), Color.FromRgba("#22b9e2"), propertyChanged: RedrawCanvas);
 
 		public Color ScaleForegroundColor
 		{
@@ -104,7 +102,7 @@ namespace DSoft.Maui.Controls
 		#region ScaleForegroundLineWidth
 
 		public static readonly BindableProperty ScaleForegroundLineWidthProperty = BindableProperty.Create(
-		   nameof(ScaleForegroundLineWidth), typeof(float), typeof(SimpleRadialGuageView), 22.0f, propertyChanged: RedrawCanvas);
+		   nameof(ScaleForegroundLineWidth), typeof(float), typeof(SimpleRadialGaugeView), 22.0f, propertyChanged: RedrawCanvas);
 
 		public float ScaleForegroundLineWidth
 		{
@@ -117,7 +115,7 @@ namespace DSoft.Maui.Controls
 		#region Percentage
 
 		public static readonly BindableProperty PercentProperty = BindableProperty.Create(
-		   nameof(Percent), typeof(double), typeof(SimpleRadialGuageView), 50.0d, propertyChanged: RedrawCanvas);
+		   nameof(Percent), typeof(double), typeof(SimpleRadialGaugeView), 50.0d, propertyChanged: RedrawCanvas);
 
 		public double Percent
 		{
@@ -129,8 +127,7 @@ namespace DSoft.Maui.Controls
 
 		#region StartAngle
 
-		public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(
-		   nameof(StartAngle), typeof(double), typeof(SimpleRadialGuageView), 120.0d, propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty StartAngleProperty = BindableProperty.Create(nameof(StartAngle), typeof(double), typeof(SimpleRadialGaugeView), 120.0d, propertyChanged: RedrawCanvas);
 
 		public double StartAngle
 		{
@@ -143,7 +140,7 @@ namespace DSoft.Maui.Controls
 		#region EndAngle
 
 		public static readonly BindableProperty EndAngleProperty = BindableProperty.Create(
-		   nameof(EndAngle), typeof(double), typeof(SimpleRadialGuageView), 300.0d, propertyChanged: RedrawCanvas);
+		   nameof(EndAngle), typeof(double), typeof(SimpleRadialGaugeView), 300.0d, propertyChanged: RedrawCanvas);
 
 		public double EndAngle
 		{
@@ -155,13 +152,12 @@ namespace DSoft.Maui.Controls
 
 		#region CenterContent
 
-		public static readonly BindableProperty CenterContentProperty = BindableProperty.Create(
-		   nameof(CenterContent), typeof(View), typeof(SimpleRadialGuageView), null, propertyChanged: null);
+		public static readonly BindableProperty CenterViewProperty = BindableProperty.Create(nameof(CenterView), typeof(View), typeof(SimpleRadialGaugeView), null, propertyChanged: null);
 
-		public View CenterContent
+		public View CenterView
 		{
-			get => (View)GetValue(CenterContentProperty);
-			set => SetValue(CenterContentProperty, value);
+			get => (View)GetValue(CenterViewProperty);
+			set => SetValue(CenterViewProperty, value);
 		}
 
 		#endregion
@@ -170,10 +166,10 @@ namespace DSoft.Maui.Controls
 
 		#region Constructors
 
-		public SimpleRadialGuageView()
+		public SimpleRadialGaugeView()
 		{
-			HorizontalOptions = LayoutOptions.FillAndExpand;
-			VerticalOptions = LayoutOptions.FillAndExpand;
+			HorizontalOptions = LayoutOptions.Fill;
+			VerticalOptions = LayoutOptions.Fill;
 
 			_canvasView.PaintSurface += OnPaintSurface;
 
@@ -200,13 +196,17 @@ namespace DSoft.Maui.Controls
 			var currentPosy = this.Height / 2;
 			var newSize = this.Width - (this.Width / 3);
 
-			_container.Content = CenterContent;
+			if (CenterView != null)
+			{
+				_container.Children.Add(CenterView);
+			}
+
 			_container.LayoutTo(new Rect(currentPosX - (newSize / 2), currentPosy - (newSize / 2), newSize, newSize), 0, Easing.Linear);
 		}
 
 		private static void RedrawCanvas(BindableObject bindable, object oldvalue, object newvalue)
 		{
-			SimpleRadialGuageView self = bindable as SimpleRadialGuageView;
+			SimpleRadialGaugeView self = bindable as SimpleRadialGaugeView;
 			self?._canvasView.InvalidateSurface();
 		}
 
@@ -224,9 +224,7 @@ namespace DSoft.Maui.Controls
 			var centery = surfaceHeight / 2;
 
 			var initialRadius = Math.Min(surfaceHeight, surfaceWidth) * 0.5f;
-
-
-
+			
 			var buffer = ScaleBackgroundLineWidth / 2;
 
 			var backradius = initialRadius - buffer;
