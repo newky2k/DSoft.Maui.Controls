@@ -11,7 +11,7 @@ namespace DSoft.Maui.Controls.TouchTracking
 		protected override void OnAttached()
 		{
 			// Get the iOS UIView corresponding to the Element that the effect is attached to
-			_view = Control ?? Container;
+			_view = Control as UIView ?? Container as UIView;
 
 			// Get access to the TouchEffect class in the PCL
 			var effect = (TouchTracking.TouchEffect)Element.Effects.FirstOrDefault(e => e is TouchEffect);

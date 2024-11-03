@@ -1,5 +1,6 @@
-﻿using System;
-
+﻿using Microsoft.Maui.Controls.Shapes;
+using Point = Microsoft.Maui.Graphics.Point;
+using SColor = Microsoft.Maui.Graphics.Color;
 
 namespace DSoft.Maui.Controls
 {
@@ -7,19 +8,18 @@ namespace DSoft.Maui.Controls
     {
         #region Fields
 
-        private Frame _background;
-        private Label _label;
+        private readonly Border _background;
+        private readonly Label _label;
 
         #endregion
 
         #region BubbleColor
 
-        public static readonly BindableProperty BubbleColorProperty = BindableProperty.Create(
-           nameof(BubbleColor), typeof(Color), typeof(BubbleView), Colors.Red, propertyChanged: RedrawCanvas);
+        public static readonly BindableProperty BubbleColorProperty = BindableProperty.Create(nameof(BubbleColor), typeof(SColor), typeof(BubbleView), Colors.Red, propertyChanged: RedrawCanvas);
 
-        public Color BubbleColor
+        public SColor BubbleColor
         {
-            get => (Color)GetValue(BubbleColorProperty);
+            get => (SColor)GetValue(BubbleColorProperty);
             set => SetValue(BubbleColorProperty, value);
         }
 
@@ -27,8 +27,7 @@ namespace DSoft.Maui.Controls
 
         #region HasShadow
 
-        public static readonly BindableProperty HasShadowProperty = BindableProperty.Create(
-           nameof(HasShadow), typeof(bool), typeof(BubbleView), true, propertyChanged: RedrawCanvas);
+        public static readonly BindableProperty HasShadowProperty = BindableProperty.Create(nameof(HasShadow), typeof(bool), typeof(BubbleView), true, propertyChanged: RedrawCanvas);
 
         public bool HasShadow
         {
@@ -40,12 +39,11 @@ namespace DSoft.Maui.Controls
 
         #region BorderColor
 
-        public static readonly BindableProperty BorderColorProperty = BindableProperty.Create(
-           nameof(BorderColor), typeof(Color), typeof(BubbleView), Colors.Transparent, propertyChanged: RedrawCanvas);
+        public static readonly BindableProperty BorderColorProperty = BindableProperty.Create(nameof(BorderColor), typeof(SColor), typeof(BubbleView), Colors.Transparent, propertyChanged: RedrawCanvas);
 
-        public Color BorderColor
+        public SColor BorderColor
         {
-            get => (Color)GetValue(BorderColorProperty);
+            get => (SColor)GetValue(BorderColorProperty);
             set => SetValue(BorderColorProperty, value);
         }
 
@@ -53,12 +51,11 @@ namespace DSoft.Maui.Controls
 
         #region TextColor
 
-        public static readonly BindableProperty TextColorProperty = BindableProperty.Create(
-           nameof(TextColor), typeof(Color), typeof(BubbleView), Colors.White, propertyChanged: RedrawCanvas);
+        public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(SColor), typeof(BubbleView), Colors.White, propertyChanged: RedrawCanvas);
 
-        public Color TextColor
+        public SColor TextColor
         {
-            get => (Color)GetValue(TextColorProperty);
+            get => (SColor)GetValue(TextColorProperty);
             set => SetValue(TextColorProperty, value);
         }
 
@@ -66,8 +63,7 @@ namespace DSoft.Maui.Controls
 
         #region Text
 
-        public static readonly BindableProperty TextProperty = BindableProperty.Create(
-           nameof(Text), typeof(string), typeof(BubbleView), "0", propertyChanged: RedrawCanvas);
+        public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(BubbleView), "0", propertyChanged: RedrawCanvas);
 
         public string Text
         {
@@ -77,16 +73,19 @@ namespace DSoft.Maui.Controls
 
         #endregion
 
+        #region Constructors
+        
         public BubbleView()
         {
             HorizontalOptions = LayoutOptions.Center;
             VerticalOptions = LayoutOptions.Center;
             Padding = 0;
-
-            _background = new Frame()
+            
+            _background = new Border()
             {
                 BackgroundColor = Colors.Red,
             };
+
 
             _label = new Label()
             {
@@ -100,24 +99,25 @@ namespace DSoft.Maui.Controls
             this.Content = _background;
         }
 
+        
+        #endregion
+
+        #region Methods
+        
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
 
             if (!(height < 0))
             {
-                var widthThing = width / 2;
-                _background.CornerRadius = (float)height / 2;
+                _background.StrokeShape = new RoundRectangle()
+                {
+                    CornerRadius = (float)height / 2,
+                };
+                
                 _background.Padding = new Thickness(0, 0, 0, 0);
 
-                if (_label.Width < 15)
-                {
-                    _background.WidthRequest = 20;
-                }
-                else
-                {
-                    _background.WidthRequest = _label.Width + 8;
-                }
+                _background.WidthRequest = _label.DesiredSize.Width + 14;
 
             }
 
@@ -129,7 +129,7 @@ namespace DSoft.Maui.Controls
             var self = bindable as BubbleView;
 
 
-            self.UpdateContent();
+            self?.UpdateContent();
 
         }
 
@@ -138,10 +138,26 @@ namespace DSoft.Maui.Controls
             _background.BackgroundColor = BubbleColor;
             _label.Text = Text;
             _label.TextColor = TextColor;
-
-            _background.BorderColor = BorderColor;
-            _background.HasShadow = HasShadow;
+            
+            _background.Stroke = BorderColor;
+            
+            if (HasShadow)
+            {
+                _background.Shadow = new Shadow()
+                {
+                    Brush = Colors.Black,
+                    Offset = new Point(2,2),
+                    Radius=4,
+                    Opacity=0.8f,
+                };
+            }
+            else
+            {
+                _background.Shadow = null;
+            }
 
         }
+        
+        #endregion
     }
 }
