@@ -9,7 +9,9 @@ Features:
 - `RepeaterView`
   - Bindable Vertical Stack layout 
 - `ColorPickView`
+  - Grid of selectable color dots
 - `ColorWheelView`
+  - Color selection wheel
 - `GradientFrame`
 - `SimpleRadialGaugeView`
   - Simple radial gauge chart with center view content
@@ -51,6 +53,9 @@ You will need to add a namespace reference to your xaml file
   xmlns:mauic="http://dsoft.maui/schemas/controls"  
 ```
 ## BubbleView
+
+<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/BubbleView.png" width="250"/>
+
 `BubbleView` is a simple control for showing notification counts.  The current API supports.
 
    - BubbleColor (background)
@@ -72,6 +77,8 @@ You will need to add a namespace reference to your xaml file
 **Note: the API will be extended in upcoming versions**
 
 ## RepeaterView
+<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/RepeaterView.png" width="250"/>
+
 `RepeaterView` is bindable VerticalStackLayout subclass making it simple and quick to display repeated data.  Use `ItemSource` to  bind to the collection you wish to repeat
 
 ```xaml
@@ -100,6 +107,9 @@ You will need to add a namespace reference to your xaml file
 ```
 
 ## SimpleRadialGaugeView
+
+<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SimpleRadialGuageView.png" width="250"/>
+
 `SimpleRadialGaugeView` is a simple radial guage chart with center view content
 
 ```xaml
@@ -123,6 +133,8 @@ You will need to add a namespace reference to your xaml file
 ```
 
 ## SimpleDonutGaugeView
+<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SimpleDonutGuageView.png" width="250"/>
+
 `SimpleDonutGaugeView`is a simple donut gauge chart with center view content
 
 ```xaml
@@ -146,6 +158,8 @@ You will need to add a namespace reference to your xaml file
 ```
 
 ## RingChartView
+<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/RingChartView.png" width="250"/>
+
 `RingChartView` is a bindable multi-ring chart with center view content. Use `ItemSource` to  bind to the collection of data.  The data must provide the following properties
 
 ```csharp
@@ -183,6 +197,9 @@ public Color? Color { get; set; }
 ```
 
 ## SingleRingChartView
+<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SingleRingChartView.png" width="250"/>
+
+
 `SingleRingChartView` is a simple single ring chart view with center view content
 
 ```xaml

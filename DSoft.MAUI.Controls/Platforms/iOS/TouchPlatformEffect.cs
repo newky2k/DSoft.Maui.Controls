@@ -3,7 +3,7 @@ using UIKit;
 
 namespace DSoft.Maui.Controls.TouchTracking
 {
-	public class TouchPlatformEffect : PlatformEffect
+	internal class TouchPlatformEffect : PlatformEffect
 	{
 		private UIView _view;
 		private TouchRecognizer _touchRecognizer;

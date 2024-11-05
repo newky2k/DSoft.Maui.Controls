@@ -8,7 +8,7 @@ using Rect = Microsoft.Maui.Graphics.Rect;
 namespace DSoft.Maui.Controls.TouchTracking
 {
 	// All the code in this file is only included on Android.
-	public class TouchPlatformEffect : PlatformEffect
+	internal class TouchPlatformEffect : PlatformEffect
 	{
 		Android.Views.View view;
 		Element _formsElement;

@@ -38,6 +38,14 @@
             await Navigation.PushModalAsync(new NavigationPage(dlg));
 
         }
+        
+        private async void OnColorPickerClicked(object sender, EventArgs e)
+        {
+            var dlg = new ColorPickerPage();
+
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
+
+        }
     }
 
 }

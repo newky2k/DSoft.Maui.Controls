@@ -9,6 +9,7 @@
         <Button Margin="30,5,30,5" Text="Charts" Clicked="OnChartsButtonClicked" />
         <Button Margin="30,5,30,5" Text="Controls" Clicked="OnControlsClicked" />
         <Button Margin="30,5,30,5" Text="PinchPan" Clicked="OnPanZoomClicked" />
+        <Button Margin="30,5,30,5" Text="Color Picker" Clicked="OnColorPickerClicked" />
     </VerticalStackLayout>
     
 </ContentPage>

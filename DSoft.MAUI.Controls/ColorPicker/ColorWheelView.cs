@@ -12,7 +12,7 @@ using DSoft.Maui.Controls.TouchTracking;
 
 namespace DSoft.Maui.Controls.ColorPicker
 {
-	public class ColorWheelView : Frame
+	public class ColorWheelView : Border
 	{
 		#region Defaults
 
@@ -39,8 +39,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 		#region ColorsProperty
 
-		public static readonly BindableProperty ColorsProperty = BindableProperty.Create(
-			nameof(Colors), typeof(IEnumerable<Color>), typeof(ColorWheelView), DefaultColors, propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty ColorsProperty = BindableProperty.Create(nameof(Colors), typeof(IEnumerable<Color>), typeof(ColorWheelView), DefaultColors, propertyChanged: RedrawCanvas);
 
 		/// <summary>
 		/// The Colors to be used by the color gradient
@@ -56,8 +55,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 		#region ShowWhite
 
-		public static readonly BindableProperty ShowWhiteProperty = BindableProperty.Create(
-			nameof(Colors), typeof(bool), typeof(ColorWheelView), true, propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty ShowWhiteProperty = BindableProperty.Create(nameof(Colors), typeof(bool), typeof(ColorWheelView), true, propertyChanged: RedrawCanvas);
 
 		/// <summary>
 		/// Show the white color gradient overlay at the center of the Gradient
@@ -139,7 +137,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 			Padding = new Thickness(0);
 			BackgroundColor = MColor.Transparent;
-			HasShadow = false;
+
 			Content = _canvasView;
 			_canvasView.PaintSurface += OnPaintSurface;
 

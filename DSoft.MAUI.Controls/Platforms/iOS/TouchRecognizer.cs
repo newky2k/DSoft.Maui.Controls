@@ -5,7 +5,7 @@ using UIKit;
 namespace DSoft.Maui.Controls.TouchTracking
 {
 	// All the code in this file is only included on iOS.
-	class TouchRecognizer : UIGestureRecognizer
+	internal class TouchRecognizer : UIGestureRecognizer
 	{
 
 		Element element;        // Forms element for firing events
