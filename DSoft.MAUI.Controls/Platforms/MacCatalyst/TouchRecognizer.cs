@@ -9,7 +9,7 @@ using UIKit;
 
 namespace DSoft.Maui.Controls.TouchTracking
 {
-	class TouchRecognizer : UIGestureRecognizer
+	internal class TouchRecognizer : UIGestureRecognizer
 	{
 
 		Element element;        // Forms element for firing events

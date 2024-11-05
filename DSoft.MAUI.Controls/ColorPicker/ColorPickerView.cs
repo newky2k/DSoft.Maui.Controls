@@ -2,18 +2,13 @@
 using SkiaSharp.Views.Maui.Controls;
 using SkiaSharp.Views.Maui;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MColor = Microsoft.Maui.Graphics.Colors;
 using DSoft.Maui.Controls.TouchTracking;
 using DSoft.Maui.Controls.Extensions;
 
 namespace DSoft.Maui.Controls.ColorPicker
 {
-	public class ColorPickerView : Frame
+	public class ColorPickerView : Border
 	{
 		#region Defaults
 
@@ -67,7 +62,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 		#region Fields
 		private readonly SKCanvasView _canvasView = new SKCanvasView();
 
-		IEnumerable<ColorPick> ColorPicks;
+		private IEnumerable<ColorPick> _colorPicks;
 
 		bool _colorPicksInitialized;
 		ColorPick _pickedColor;
@@ -104,8 +99,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 		#region ColorsProperty
 
-		public static readonly BindableProperty ColorsProperty = BindableProperty.Create(
-			nameof(Colors), typeof(IEnumerable<Color>), typeof(ColorWheelView), DefaultColors, propertyChanged: RedrawCanvasNewColors);
+		public static readonly BindableProperty ColorsProperty = BindableProperty.Create(nameof(Colors), typeof(IEnumerable<Color>), typeof(ColorPickerView), DefaultColors, propertyChanged: RedrawCanvasNewColors);
 
 		/// <summary>
 		/// The Colors to be used by the color gradient
@@ -121,8 +115,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 		#region ColorsPerRow
 
-		public static readonly BindableProperty ColorsPerRowProperty = BindableProperty.Create(
-			nameof(Colors), typeof(int), typeof(ColorWheelView), 5, propertyChanged: RedrawCanvas);
+		public static readonly BindableProperty ColorsPerRowProperty = BindableProperty.Create(nameof(Colors), typeof(int), typeof(ColorPickerView), 5, propertyChanged: RedrawCanvas);
 
 		/// <summary>
 		/// Show the white color gradient overlay at the center of the Gradient
@@ -153,7 +146,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 			Padding = new Thickness(0);
 			BackgroundColor = MColor.Transparent;
-			HasShadow = false;
+			//HasShadow = false;
 			Content = _canvasView;
 			_canvasView.PaintSurface += OnPaintSurface;
 
@@ -174,10 +167,12 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 		private static void RedrawCanvasNewColors(BindableObject bindable, object oldvalue, object newvalue)
 		{
-			ColorPickerView colorPicker = bindable as ColorPickerView;
-
-			colorPicker._colorPicksInitialized = false;
-			colorPicker?._canvasView.InvalidateSurface();
+			if (bindable is ColorPickerView colorPicker)
+			{
+				colorPicker._colorPicksInitialized = false;
+				colorPicker?._canvasView.InvalidateSurface();
+			}
+	
 		}
 
 		private static void RedrawCanvas(BindableObject bindable, object oldvalue, object newvalue)
@@ -201,7 +196,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 			}
 
 			// draw the colors
-			foreach (var cp in ColorPicks)
+			foreach (var cp in _colorPicks)
 			{
 				_clrPickPaint.Color = cp.Color.ToSKColor();
 				canvas.DrawCircle(cp.Position.X, cp.Position.Y, cp.Radius, _clrPickPaint);
@@ -240,9 +235,9 @@ namespace DSoft.Maui.Controls.ColorPicker
 			var row = 1;
 			var radius = (colorWidth / 2) - 10;
 
-			ColorPicks = Colors.ToColorPicks();
+			_colorPicks = Colors.ToColorPicks();
 
-			foreach (var cp in ColorPicks)
+			foreach (var cp in _colorPicks)
 			{
 
 				if (col > ColorsPerRow)
@@ -271,7 +266,7 @@ namespace DSoft.Maui.Controls.ColorPicker
 				var pnt = args.Location.ToPixelSKPoint(_canvasView);
 
 				// loop through all colors
-				foreach (var cp in ColorPicks)
+				foreach (var cp in _colorPicks)
 				{
 					// check if selecting a color
 					if (cp.IsTouched(pnt))

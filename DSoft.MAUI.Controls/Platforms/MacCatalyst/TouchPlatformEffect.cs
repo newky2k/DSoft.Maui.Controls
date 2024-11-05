@@ -5,7 +5,7 @@ using UIKit;
 namespace DSoft.Maui.Controls.TouchTracking
 {
 	// All the code in this file is only included on Mac Catalyst.
-	public class TouchPlatformEffect : PlatformEffect
+	internal class TouchPlatformEffect : PlatformEffect
 	{
 		UIView view;
 		TouchRecognizer touchRecognizer;

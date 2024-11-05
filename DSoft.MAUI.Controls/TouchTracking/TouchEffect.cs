@@ -9,11 +9,9 @@ namespace DSoft.Maui.Controls.TouchTracking
 {
 	public class TouchEffect : RoutingEffect
 	{
-		private const string effectId = "DSoft.Maui.Controls.TouchEffect";
-
 		public event TouchActionEventHandler TouchAction;
 
-		public TouchEffect() : base(effectId) { }
+		public TouchEffect() : base() { }
 
 		public bool Capture { set; get; }
 
