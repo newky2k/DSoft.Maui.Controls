@@ -54,7 +54,7 @@ You will need to add a namespace reference to your xaml file
 ```
 ## BubbleView
 
-<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/BubbleView.png" width="250"/>
+![BubbleView](images/BubbleView.png)
 
 `BubbleView` is a simple control for showing notification counts.  The current API supports.
 
@@ -77,7 +77,8 @@ You will need to add a namespace reference to your xaml file
 **Note: the API will be extended in upcoming versions**
 
 ## RepeaterView
-<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/RepeaterView.png" width="250"/>
+
+![RepeaterView](images/RepeaterView.png)
 
 `RepeaterView` is bindable VerticalStackLayout subclass making it simple and quick to display repeated data.  Use `ItemSource` to  bind to the collection you wish to repeat
 
@@ -108,7 +109,7 @@ You will need to add a namespace reference to your xaml file
 
 ## SimpleRadialGaugeView
 
-<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SimpleRadialGuageView.png" width="250"/>
+![SimpleRadialGuageView](images/SimpleRadialGuageView.png)
 
 `SimpleRadialGaugeView` is a simple radial guage chart with center view content
 
@@ -133,7 +134,8 @@ You will need to add a namespace reference to your xaml file
 ```
 
 ## SimpleDonutGaugeView
-<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SimpleDonutGuageView.png" width="250"/>
+
+![SimpleDonutGuageView](images/SimpleDonutGuageView.png)
 
 `SimpleDonutGaugeView`is a simple donut gauge chart with center view content
 
@@ -158,7 +160,8 @@ You will need to add a namespace reference to your xaml file
 ```
 
 ## RingChartView
-<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/RingChartView.png" width="250"/>
+
+![RingChartView](images/RingChartView.png)
 
 `RingChartView` is a bindable multi-ring chart with center view content. Use `ItemSource` to  bind to the collection of data.  The data must provide the following properties
 
@@ -197,8 +200,8 @@ public Color? Color { get; set; }
 ```
 
 ## SingleRingChartView
-<img src="https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SingleRingChartView.png" width="250"/>
 
+![SingleRingChartView](images/SingleRingChartView.png)
 
 `SingleRingChartView` is a simple single ring chart view with center view content
 
