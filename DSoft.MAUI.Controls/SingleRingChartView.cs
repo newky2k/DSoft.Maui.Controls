@@ -314,7 +314,7 @@ namespace DSoft.Maui.Controls
 
 			if (HasDropShadow)
 			{
-				var rectangleStyleFillShadow = SKImageFilter.CreateDropShadow(0f, 0f, DropShadowDepth, DropShadowDepth, foreColor, null, null);
+				var rectangleStyleFillShadow = SKImageFilter.CreateDropShadow(0f, 0f, DropShadowDepth, DropShadowDepth, foreColor, null);
 				arcPaintRound.ImageFilter = rectangleStyleFillShadow;
 				arcPaint.ImageFilter = rectangleStyleFillShadow;
 

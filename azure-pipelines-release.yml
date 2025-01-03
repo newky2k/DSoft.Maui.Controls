@@ -19,7 +19,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  DotNetVersion: '8.x'
+  DotNetVersion: '9.x'
   releaseSuffix: ''
 
 name: 2.0.$(date:yyMM).$(date:dd)$(rev:r)

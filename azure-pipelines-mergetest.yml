@@ -12,7 +12,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  DotNetVersion: '8.x'
+  DotNetVersion: '9.x'
 
 steps:
 - task: UseDotNet@2
