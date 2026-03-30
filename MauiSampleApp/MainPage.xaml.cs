@@ -54,6 +54,14 @@
             await Navigation.PushModalAsync(new NavigationPage(dlg));
 
         }
+        
+        private async void OnSegmentedControlPageClicked(object sender, EventArgs e)
+        {
+            var dlg = new SegmentedControlPage();
+
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
+
+        }
     }
 
 }
