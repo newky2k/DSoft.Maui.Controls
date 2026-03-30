@@ -11,6 +11,7 @@
         <Button Margin="30,5,30,5" Text="PinchPan" Clicked="OnPanZoomClicked" />
         <Button Margin="30,5,30,5" Text="Color Picker" Clicked="OnColorPickerClicked" />
         <Button Margin="30,5,30,5" Text="Wizard Control" Clicked="OnWizardPageClicked" />
+        <Button Margin="30,5,30,5" Text="Segmented Control" Clicked="OnSegmentedControlPageClicked" />
     </VerticalStackLayout>
     
 </ContentPage>

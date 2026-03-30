@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage x:Class="MauiSampleApp.SegmentedControlPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="http://dsoft.maui/schemas/controls"
+             xmlns:local="clr-namespace:MauiSampleApp"
+             x:DataType="local:SegmentedControlPageViewModel"
+             Title="Segmented Control">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
+    <ScrollView>
+        <VerticalStackLayout Padding="24,32" Spacing="8">
+
+            <!-- ── Section: Default ──────────────────────────────────────── -->
+            <Label Text="DEFAULT (iOS-STYLE)"
+                   FontSize="12" FontAttributes="Bold"
+                   TextColor="#8E8E93" Margin="4,0,0,4" />
+
+            <controls:SegmentedControl
+                x:Name="BasicControl"
+                SelectedIndex="0"
+                SegmentSelected="OnSegmentSelected">
+                <controls:SegmentedControl.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Day</x:String>
+                        <x:String>Week</x:String>
+                        <x:String>Month</x:String>
+                    </x:Array>
+                </controls:SegmentedControl.ItemsSource>
+            </controls:SegmentedControl>
+
+            <BoxView HeightRequest="1" Color="#E5E5EA" Margin="0,16" />
+
+            <!-- ── Section: Dark theme ───────────────────────────────────── -->
+            <Label Text="DARK THEME"
+                   FontSize="12" FontAttributes="Bold"
+                   TextColor="#8E8E93" Margin="4,0,0,4" />
+
+            <controls:SegmentedControl
+                SelectedIndex="1"
+                TrackColor="#1C1C1E"
+                ThumbColor="#2C2C2E"
+                SelectedTextColor="#FFFFFF"
+                UnselectedTextColor="#8E8E93"
+                BorderColor="#38383A"
+                BorderThickness="0"
+                CornerRadius="10"
+                ThumbCornerRadius="8"
+                SegmentSelected="OnSegmentSelected">
+                <controls:SegmentedControl.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Map</x:String>
+                        <x:String>Transit</x:String>
+                        <x:String>Satellite</x:String>
+                    </x:Array>
+                </controls:SegmentedControl.ItemsSource>
+            </controls:SegmentedControl>
+
+            <BoxView HeightRequest="1" Color="#E5E5EA" Margin="0,16" />
+
+            <!-- ── Section: Tinted accent ────────────────────────────────── -->
+            <Label Text="TINTED ACCENT"
+                   FontSize="12" FontAttributes="Bold"
+                   TextColor="#8E8E93" Margin="4,0,0,4" />
+
+            <controls:SegmentedControl
+                SelectedIndex="0"
+                TrackColor="#E3EEFF"
+                ThumbColor="#007AFF"
+                SelectedTextColor="#FFFFFF"
+                UnselectedTextColor="#007AFF"
+                BorderColor="#C5D8FF"
+                CornerRadius="10"
+                ThumbCornerRadius="8"
+                FontSize="13"
+                SegmentSelected="OnSegmentSelected">
+                <controls:SegmentedControl.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>All</x:String>
+                        <x:String>Unread</x:String>
+                        <x:String>Flagged</x:String>
+                    </x:Array>
+                </controls:SegmentedControl.ItemsSource>
+            </controls:SegmentedControl>
+
+            <BoxView HeightRequest="1" Color="#E5E5EA" Margin="0,16" />
+
+            <!-- ── Section: Pill ─────────────────────────────────────────── -->
+            <Label Text="PILL SHAPE"
+                   FontSize="12" FontAttributes="Bold"
+                   TextColor="#8E8E93" Margin="4,0,0,4" />
+
+            <controls:SegmentedControl
+                SelectedIndex="0"
+                CornerRadius="20"
+                ThumbCornerRadius="18"
+                SegmentHeight="38"
+                SegmentPadding="3"
+                SegmentSelected="OnSegmentSelected">
+                <controls:SegmentedControl.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Sign In</x:String>
+                        <x:String>Sign Up</x:String>
+                    </x:Array>
+                </controls:SegmentedControl.ItemsSource>
+            </controls:SegmentedControl>
+
+            <BoxView HeightRequest="1" Color="#E5E5EA" Margin="0,16" />
+
+            <!-- ── Section: Five segments ────────────────────────────────── -->
+            <Label Text="FIVE SEGMENTS"
+                   FontSize="12" FontAttributes="Bold"
+                   TextColor="#8E8E93" Margin="4,0,0,4" />
+
+            <controls:SegmentedControl
+                SelectedIndex="2"
+                FontSize="11"
+                SegmentSelected="OnSegmentSelected">
+                <controls:SegmentedControl.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>1D</x:String>
+                        <x:String>1W</x:String>
+                        <x:String>1M</x:String>
+                        <x:String>6M</x:String>
+                        <x:String>1Y</x:String>
+                    </x:Array>
+                </controls:SegmentedControl.ItemsSource>
+            </controls:SegmentedControl>
+
+            <BoxView HeightRequest="1" Color="#E5E5EA" Margin="0,16" />
+
+            <!-- ── Example 5: ViewModel binding ─────────────────────────── -->
+            <Label Text="ViewModel binding (x:Bind / MVVM)" FontAttributes="Bold"
+                   FontSize="13" TextColor="#8E8E93" />
+
+            <controls:SegmentedControl
+                ItemsSource="{Binding Items}"
+                SelectedIndex="{Binding SelectedIndex}"
+                SelectedItem="{Binding SelectedItem}"
+                SelectedCommand="{Binding ItemSelectedCommand}" />
+            
+            <!-- ── Result readout ────────────────────────────────────────── -->
+            <Border
+                BackgroundColor="White"
+                StrokeThickness="0"
+                Padding="16,12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Last selection" FontSize="12" TextColor="#8E8E93" />
+                    <Label x:Name="ResultLabel"
+                           Text="Tap any segment above"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="#1C1C1E" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
