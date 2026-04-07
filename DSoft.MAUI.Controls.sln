@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".ci", ".ci", "{7E6E0FED-0AD
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
+		AGENTS.md = AGENTS.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSoft.Maui.Controls", "DSoft.MAUI.Controls\DSoft.Maui.Controls.csproj", "{A00A422D-4EA7-41ED-9AD1-147A951DA100}"
