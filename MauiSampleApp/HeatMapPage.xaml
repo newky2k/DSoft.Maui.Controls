@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="http://dsoft.maui/schemas/controls"
+             xmlns:local="clr-namespace:MauiSampleApp"
+             x:DataType="local:HeatMapPageViewModel"
+             x:Class="MauiSampleApp.HeatMapPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
+    <Grid>
+        
+        <controls:HeatmapChartView x:Name="HeatmapChart"
+                                   YLabels="{Binding YLabels}"
+                                   XLabels="{Binding XLabels}"
+                                   Cells="{Binding Cells}"
+                                   Padding="5"
+                                   HeightRequest="300"
+                                   HorizontalOptions="Fill"
+                                   LabelFontSize="12"
+                                   LabelColor="Black"
+                                   CellSpacing="4"
+                                   ShowGridLines="True"
+                                   EmptyCellColor="Transparent"
+                                   XLabelRotation="0" />
+            
+    </Grid>
+</ContentPage>

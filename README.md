@@ -27,6 +27,8 @@ Features:
     - Bindable Wizard view for wizard dialogs
 - `SegmentedControl`
     - MAUI Segmented Control
+- `HeatmapChartView`
+    - Grid-based heatmap chart with X/Y axis labels
 
 This packages also contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
@@ -262,7 +264,7 @@ There are no plans to release a NuGet version for the time being, as PanPinchCon
 
 # Segmented Control
 
-![SingleRingChartView](https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SegmentedControl.png)
+![Segmented Control](https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/SegmentedControl.png)
 
 A fully native-free segmented control for .NET MAUI. Built entirely from MAUI primitives (`Border`, `Grid`, `Label`, `TapGestureRecognizer`) with no platform-specific views, handlers, or renderers — so it works identically on iOS, Android, Windows, and macOS without any per-platform code paths.
 
@@ -477,4 +479,66 @@ The two selection properties are kept in sync via a `_suppressCallbacks` guard t
 - **Equal-width segments only.** All segments share a `GridLength.Star` column definition. Variable-width segments are not currently supported.
 - **Single selection only.** Multi-select is not supported by design; use a set of `CheckBox` or `ToggleButton` controls for that pattern.
 - **`IList` not `INotifyCollectionChanged`.** Replacing `ItemsSource` with a new list rebuilds the segments correctly, but mutating an existing `ObservableCollection` after binding will not auto-refresh. Reassign the property to trigger a rebuild.
+
+---
+
+# HeatmapChartView
+
+![Heatmap Chart View](https://raw.githubusercontent.com/newky2k/DSoft.Maui.Controls/refs/heads/main/images/heatmapview.png)
+
+`HeatmapChartView` is a SkiaSharp-based heatmap grid. Each cell supplies its own colour directly — no colour-stop interpolation is performed by the control. Row and column counts are derived from the `YLabels` and `XLabels` collections respectively.
+
+## Basic Usage
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:HeatmapChartView
+    XLabels="{Binding XLabels}"
+    YLabels="{Binding YLabels}"
+    Cells="{Binding Cells}"
+    HeightRequest="300"
+    HorizontalOptions="Fill"
+    CellSpacing="4"
+    LabelFontSize="12"
+    LabelColor="Black"
+    ShowGridLines="True"
+    EmptyCellColor="Transparent"
+    XLabelRotation="0" />
+```
+
+## HeatmapCell
+
+Each cell in the `Cells` collection is a `HeatmapCell`:
+
+```csharp
+public class HeatmapCell
+{
+    /// <summary>Zero-based row index (top = 0).</summary>
+    public int Row { get; set; }
+
+    /// <summary>Zero-based column index (left = 0).</summary>
+    public int Column { get; set; }
+
+    /// <summary>Fill colour for this cell.</summary>
+    public Color Color { get; set; }
+}
+```
+
+Grid positions with no matching cell are filled with `EmptyCellColor` (transparent by default).
+
+## Bindable Properties Reference
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `XLabels` | `IList<string>` | `null` | Labels shown along the bottom axis — one per column. The column count equals `XLabels.Count`. |
+| `YLabels` | `IList<string>` | `null` | Labels shown along the left axis — one per row, top to bottom. The row count equals `YLabels.Count`. |
+| `Cells` | `IList<HeatmapCell>` | `null` | The cells to render. Cells are looked up by `(Row, Column)` — missing positions use `EmptyCellColor`. |
+| `CellSpacing` | `float` | `2` | Gap in pixels between adjacent cells. |
+| `LabelFontSize` | `float` | `12` | Font size (sp) for axis labels. |
+| `LabelColor` | `Color` | `Black` | Colour of the axis label text. |
+| `ShowGridLines` | `bool` | `false` | When `true`, draws a thin border around every cell. |
+| `GridLineColor` | `Color` | `LightGray` | Colour of the optional grid-line borders. |
+| `EmptyCellColor` | `Color` | `Transparent` | Fill colour for grid positions that have no matching `HeatmapCell`. |
+| `XLabelRotation` | `float` | `0` | Clockwise rotation in degrees for X-axis labels. Use `45` or `90` for long labels that would otherwise overlap. |
 
