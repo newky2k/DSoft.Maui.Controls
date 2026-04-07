@@ -47,6 +47,16 @@ This packages also contains `PanPinchContainer` based on `PanPinchContainer` by 
 
 # Setup
 
+## Core library
+The core library with basic models and non-UI code for MVVM and dependency Injection
+
+Add the package from Nuget, either from NuGet Package Manager or command line
+
+        dotnet add package DSoft.Maui.Controls.Core
+
+## Controls
+The main UI controls library contains the Views, Behaviours and controls to use in your MAUI project.
+
 Add the package from Nuget, either from NuGet Package Manager or command line
 
         dotnet add package DSoft.Maui.Controls

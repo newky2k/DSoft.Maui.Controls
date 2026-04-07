@@ -1,7 +1,9 @@
-namespace DSoft.Maui.Controls.Models;
+using Microsoft.Maui.Graphics;
+
+namespace DSoft.Maui.Controls.Core.Models;
 
 /// <summary>
-/// Represents a single cell in a <see cref="HeatmapChartView"/>.
+/// Represents a single cell in a HeatmapChartView.
 /// The colour to render is supplied directly rather than derived from a value scale.
 /// </summary>
 public class HeatmapCell

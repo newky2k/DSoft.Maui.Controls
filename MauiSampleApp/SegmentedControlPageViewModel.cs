@@ -1,6 +1,6 @@
 using System.Mvvm;
 using System.Windows.Input;
-using DSoft.Maui.Controls.Models;
+using DSoft.Maui.Controls.Core.Models;
 
 namespace MauiSampleApp;
 
