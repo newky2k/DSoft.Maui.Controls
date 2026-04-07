@@ -1,7 +1,7 @@
+using DSoft.Maui.Controls.Core.Models;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
-using DSoft.Maui.Controls.Models;
 
 namespace DSoft.Maui.Controls;
 

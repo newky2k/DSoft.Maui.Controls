@@ -1,4 +1,5 @@
-namespace DSoft.Maui.Controls.Models;
+
+namespace DSoft.Maui.Controls.Core.Models;
 
 public class SegmentedControlItem
 {

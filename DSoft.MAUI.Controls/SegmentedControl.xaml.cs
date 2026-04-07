@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Windows.Input;
+using DSoft.Maui.Controls.Core.Models;
 using DSoft.Maui.Controls.Events;
-using DSoft.Maui.Controls.Models;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace DSoft.Maui.Controls;

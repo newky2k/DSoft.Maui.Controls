@@ -1,5 +1,5 @@
 using System.Mvvm;
-using DSoft.Maui.Controls.Models;
+using DSoft.Maui.Controls.Core.Models;
 
 namespace MauiSampleApp;
 
