@@ -8,6 +8,7 @@
 		<RepositoryType>git</RepositoryType>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>Latest</LangVersion>
+		<Nullable>enable</Nullable>
 		<NoWarn>1701;1702;CS8002;CS8653;CS8600;CS1591;CS8603;CS8602;CS8765;CS8618;CS8604;</NoWarn>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
