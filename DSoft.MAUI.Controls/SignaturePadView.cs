@@ -135,9 +135,16 @@ public class SignaturePadView : ContentView
         switch (e.ActionType)
         {
             case SKTouchAction.Pressed:
-                var stroke = new List<SKPoint> { e.Location };
-                _activeStrokes[e.Id] = stroke;
-                _strokes.Add(stroke);
+            case SKTouchAction.Entered:
+                // Android can fire Entered instead of Pressed for the initial contact.
+                if (!_activeStrokes.ContainsKey(e.Id))
+                {
+                    var stroke = new List<SKPoint> { e.Location };
+                    _activeStrokes[e.Id] = stroke;
+                    _strokes.Add(stroke);
+                    // Tell any ancestor ScrollView not to steal the touch gesture mid-stroke.
+                    SetParentScrollingEnabled(false);
+                }
                 break;
 
             case SKTouchAction.Moved:
@@ -150,12 +157,28 @@ public class SignaturePadView : ContentView
 
             case SKTouchAction.Released:
             case SKTouchAction.Cancelled:
+            case SKTouchAction.Exited:
+                // Android can fire Exited when touch leaves the view boundary mid-stroke.
                 _activeStrokes.Remove(e.Id);
                 _canvasView.InvalidateSurface();
+                if (_activeStrokes.Count == 0)
+                    SetParentScrollingEnabled(true);
                 break;
         }
 
         e.Handled = true;
+    }
+
+    /// <summary>
+    /// On Android, asks the nearest ancestor ViewGroup to stop intercepting touch events so that
+    /// a parent ScrollView cannot steal the gesture mid-stroke.
+    /// </summary>
+    private void SetParentScrollingEnabled(bool enabled)
+    {
+#if ANDROID
+        if (_canvasView.Handler?.PlatformView is Android.Views.View nativeView)
+            nativeView.Parent?.RequestDisallowInterceptTouchEvent(!enabled);
+#endif
     }
 
     #endregion
