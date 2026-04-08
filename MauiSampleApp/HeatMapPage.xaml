@@ -5,13 +5,15 @@
              xmlns:controls="http://dsoft.maui/schemas/controls"
              xmlns:local="clr-namespace:MauiSampleApp"
              x:DataType="local:HeatMapPageViewModel"
-             x:Class="MauiSampleApp.HeatMapPage">
+             x:Class="MauiSampleApp.HeatMapPage"
+             Title="Heatmap">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
     </ContentPage.ToolbarItems>
     <Grid>
         
         <controls:HeatmapChartView x:Name="HeatmapChart"
+                                   VerticalOptions="Start"
                                    YLabels="{Binding YLabels}"
                                    XLabels="{Binding XLabels}"
                                    Cells="{Binding Cells}"
