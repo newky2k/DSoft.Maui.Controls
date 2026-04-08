@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="http://dsoft.maui/schemas/controls"
+             x:Class="MauiSampleApp.TabViewPage"
+             Title="Tab View">
+
+    <ContentPage.Resources>
+        <!-- Custom style applied to the internal SegmentedControl via SegmentedControlStyle -->
+        <Style x:Key="CustomTabBarStyle" TargetType="controls:SegmentedControl">
+            <Setter Property="TrackColor" Value="#1E88E5" />
+            <Setter Property="ThumbColor" Value="White" />
+            <Setter Property="SelectedTextColor" Value="#1E88E5" />
+            <Setter Property="UnselectedTextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="ThumbCornerRadius" Value="4" />
+            <Setter Property="SegmentHeight" Value="36" />
+            <Setter Property="ThumbShadow" Value="False" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
+    
+    <ScrollView >
+        <VerticalStackLayout Spacing="24" Padding="16">
+
+            <!-- Default style, tabs on top -->
+            <Label Text="Default Style — Tabs Top" FontSize="14" FontAttributes="Bold" TextColor="Gray" />
+
+            <controls:TabView HeightRequest="200">
+                <controls:TabItem Title="Profile">
+                    <VerticalStackLayout Spacing="8" Padding="8">
+                        <Label Text="Profile Content" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="This is the profile tab body." TextColor="Gray" />
+                    </VerticalStackLayout>
+                </controls:TabItem>
+                <controls:TabItem Title="Activity">
+                    <VerticalStackLayout Spacing="8" Padding="8">
+                        <Label Text="Activity Content" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="Recent activity would be listed here." TextColor="Gray" />
+                    </VerticalStackLayout>
+                </controls:TabItem>
+                <controls:TabItem Title="Settings">
+                    <VerticalStackLayout Spacing="8" Padding="8">
+                        <Label Text="Settings Content" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="Configuration options appear in this tab." TextColor="Gray" />
+                    </VerticalStackLayout>
+                </controls:TabItem>
+            </controls:TabView>
+
+            <!-- Custom style, tabs on bottom -->
+            <Label Text="Custom Style — Tabs Bottom" FontSize="14" FontAttributes="Bold" TextColor="Gray" />
+
+            <controls:TabView HeightRequest="200"
+                              TabPosition="Bottom"
+                              TabSpacing="4"
+                              SegmentedControlStyle="{StaticResource CustomTabBarStyle}">
+                <controls:TabItem Title="Overview">
+                    <VerticalStackLayout Spacing="8" Padding="8">
+                        <Label Text="Overview" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="Summary information goes here." TextColor="Gray" />
+                    </VerticalStackLayout>
+                </controls:TabItem>
+                <controls:TabItem Title="Details">
+                    <VerticalStackLayout Spacing="8" Padding="8">
+                        <Label Text="Details" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="In-depth details are shown in this tab." TextColor="Gray" />
+                    </VerticalStackLayout>
+                </controls:TabItem>
+                <controls:TabItem Title="History">
+                    <VerticalStackLayout Spacing="8" Padding="8">
+                        <Label Text="History" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="Historical records would appear here." TextColor="Gray" />
+                    </VerticalStackLayout>
+                </controls:TabItem>
+            </controls:TabView>
+
+            <!-- Two-way binding demo -->
+            <Label Text="Two-Way Binding" FontSize="14" FontAttributes="Bold" TextColor="Gray" />
+
+            <controls:TabView x:Name="BoundTabView"
+                              HeightRequest="160"
+                              SelectedIndex="{Binding Source={x:Reference TabPicker}, Path=SelectedIndex}">
+                <controls:TabItem Title="One">
+                    <Label Text="Tab One is selected." HorizontalOptions="Center" VerticalOptions="Center" />
+                </controls:TabItem>
+                <controls:TabItem Title="Two">
+                    <Label Text="Tab Two is selected." HorizontalOptions="Center" VerticalOptions="Center" />
+                </controls:TabItem>
+                <controls:TabItem Title="Three">
+                    <Label Text="Tab Three is selected." HorizontalOptions="Center" VerticalOptions="Center" />
+                </controls:TabItem>
+            </controls:TabView>
+
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Label Grid.Column="0" Text="Select tab:" VerticalOptions="Center" />
+                <Picker x:Name="TabPicker" Grid.Column="1" SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>One</x:String>
+                        <x:String>Two</x:String>
+                        <x:String>Three</x:String>
+                    </Picker.Items>
+                </Picker>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

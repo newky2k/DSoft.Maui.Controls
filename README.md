@@ -29,6 +29,10 @@ Features:
     - MAUI Segmented Control
 - `HeatmapChartView`
     - Grid-based heatmap chart with X/Y axis labels
+- `SignaturePadView`
+    - Freehand signature capture with configurable ink, stroke width and background; exports to PNG or JPEG at any size
+- `TabView`
+    - Tab container using `SegmentedControl` as the tab bar; supports top/bottom tab position, two-way `SelectedIndex` binding, and external styling of the tab bar via `SegmentedControlStyle`
 
 This packages also contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
@@ -552,3 +556,182 @@ Grid positions with no matching cell are filled with `EmptyCellColor` (transpare
 | `EmptyCellColor` | `Color` | `Transparent` | Fill colour for grid positions that have no matching `HeatmapCell`. |
 | `XLabelRotation` | `float` | `0` | Clockwise rotation in degrees for X-axis labels. Use `45` or `90` for long labels that would otherwise overlap. |
 
+---
+
+# SignaturePadView
+
+`SignaturePadView` is a SkiaSharp-based freehand signature capture control. Users draw with a finger or stylus; the result can be exported as a PNG or JPEG at any requested output size with a choice of background colour.
+
+## Basic Usage
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:SignaturePadView
+    x:Name="SignaturePad"
+    HeightRequest="220"
+    HorizontalOptions="Fill"
+    ViewBackgroundColor="#F0F0F0"
+    InkColor="Black"
+    StrokeWidth="3" />
+```
+
+Add Clear and Export buttons in code-behind:
+
+```csharp
+private void OnClearClicked(object sender, EventArgs e)
+{
+    SignaturePad.Clear();
+}
+
+private async void OnExportClicked(object sender, EventArgs e)
+{
+    if (!SignaturePad.HasSignature)
+        return;
+
+    byte[] bytes = await SignaturePad.GetImageAsync(
+        width: 600,
+        height: 300,
+        format: SignatureImageFormat.Png,
+        backgroundColor: Colors.White);
+
+    SignatureImage.Source = ImageSource.FromStream(() => new MemoryStream(bytes));
+}
+```
+
+## Exporting the Signature
+
+`GetImageAsync` renders the captured strokes onto a fresh surface at the exact pixel dimensions you request, with the background colour of your choice. The `ViewBackgroundColor` of the live view is intentionally excluded from the export so you can always produce a clean image regardless of how the pad looks on screen.
+
+```csharp
+// PNG with a white background
+byte[] png = await SignaturePad.GetImageAsync(
+    width: 800,
+    height: 400,
+    format: SignatureImageFormat.Png,
+    backgroundColor: Colors.White);
+
+// PNG with a transparent background
+byte[] pngTransparent = await SignaturePad.GetImageAsync(
+    width: 800,
+    height: 400,
+    format: SignatureImageFormat.Png,
+    backgroundColor: Colors.Transparent);
+
+// JPEG with a light-yellow background
+byte[] jpg = await SignaturePad.GetImageAsync(
+    width: 800,
+    height: 400,
+    format: SignatureImageFormat.Jpeg,
+    backgroundColor: Color.FromArgb("#FFF9C4"));
+```
+
+The strokes are scaled proportionally to the requested output size, so the signature always looks the same regardless of the export dimensions.
+
+## Bindable Properties Reference
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `InkColor` | `Color` | `Black` | The colour of the ink strokes. |
+| `StrokeWidth` | `float` | `3` | Thickness of the ink strokes in device-independent units. |
+| `ViewBackgroundColor` | `Color` | `White` | Background colour shown behind the signature while drawing. **Not** included in exported images. |
+
+## Public API
+
+| Member | Description |
+|---|---|
+| `HasSignature` | `bool` — `true` if the user has drawn at least one point. |
+| `Clear()` | Removes all strokes and resets the pad. |
+| `GetImageAsync(width, height, format, backgroundColor)` | Returns the signature as a `byte[]` encoded at the requested size. `backgroundColor` defaults to `Colors.White` if `null`. |
+
+### `SignatureImageFormat`
+
+| Value | Description |
+|---|---|
+| `Png` | PNG — lossless, supports transparency. |
+| `Jpeg` | JPEG — lossy, no transparency. |
+
+## How It Works
+
+The control hosts an `SKCanvasView` with `EnableTouchEvents = true`. Each finger or stylus contact is tracked independently by its touch id, so multiple simultaneous strokes are handled correctly. Points within a stroke are smoothed using quadratic Bézier curves through consecutive mid-points, giving the ink a natural, handwritten feel. Single taps (a press with no movement) are rendered as filled circles.
+
+When `GetImageAsync` is called, a new off-screen `SKSurface` is created at the requested dimensions. The stored stroke points — which are in the canvas's native pixel space — are scaled proportionally to the output size. The stroke width scales by the same ratio, keeping the visual weight of the ink consistent with what the user saw on screen.
+
+---
+
+# TabView
+
+`TabView` is a tab container that uses the built-in `SegmentedControl` as its tab bar. Add `TabItem` children in XAML — the tab bar is built automatically from their titles and selecting a segment instantly shows the matching content view.
+
+## Basic Usage
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:TabView HeightRequest="300">
+    <controls:TabItem Title="Profile">
+        <VerticalStackLayout Padding="8">
+            <Label Text="Profile content here." />
+        </VerticalStackLayout>
+    </controls:TabItem>
+    <controls:TabItem Title="Activity">
+        <VerticalStackLayout Padding="8">
+            <Label Text="Activity content here." />
+        </VerticalStackLayout>
+    </controls:TabItem>
+    <controls:TabItem Title="Settings">
+        <VerticalStackLayout Padding="8">
+            <Label Text="Settings content here." />
+        </VerticalStackLayout>
+    </controls:TabItem>
+</controls:TabView>
+```
+
+## Styling the Tab Bar
+
+Pass a `Style` targeting `SegmentedControl` to `SegmentedControlStyle` to fully control the look of the tab bar without touching the control internals:
+
+```xaml
+<ContentPage.Resources>
+    <Style x:Key="BlueTabBar" TargetType="controls:SegmentedControl">
+        <Setter Property="TrackColor" Value="#1E88E5" />
+        <Setter Property="ThumbColor" Value="White" />
+        <Setter Property="SelectedTextColor" Value="#1E88E5" />
+        <Setter Property="UnselectedTextColor" Value="White" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="ThumbCornerRadius" Value="4" />
+        <Setter Property="SegmentHeight" Value="36" />
+        <Setter Property="ThumbShadow" Value="False" />
+    </Style>
+</ContentPage.Resources>
+
+<controls:TabView SegmentedControlStyle="{StaticResource BlueTabBar}"
+                  TabPosition="Bottom">
+    ...
+</controls:TabView>
+```
+
+## Two-Way Binding
+
+`SelectedIndex` supports two-way binding, so you can drive the active tab from a view-model or another control:
+
+```xaml
+<controls:TabView SelectedIndex="{Binding ActiveTab}">
+    ...
+</controls:TabView>
+```
+
+## Bindable Properties Reference
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `SelectedIndex` | `int` | `0` | Zero-based index of the active tab. Supports two-way binding. |
+| `TabPosition` | `TabPosition` | `Top` | Places the tab bar above (`Top`) or below (`Bottom`) the content area. |
+| `TabSpacing` | `double` | `8` | Gap in device-independent units between the tab bar and the content area. |
+| `SegmentedControlStyle` | `Style` | `null` | A MAUI `Style` targeting `SegmentedControl` applied to the internal tab bar. |
+
+## Events
+
+| Event | Description |
+|---|---|
+| `TabSelected` | Raised when the user taps a tab. The `EventArgs` value is the new selected index (`int`). |
