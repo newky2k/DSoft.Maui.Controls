@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="http://dsoft.maui/schemas/controls"
+             x:Class="MauiSampleApp.SignaturePadPage"
+             Title="Signature Pad"
+             SafeAreaEdges="All">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Padding="16">
+
+            <!-- Signature capture area -->
+            <Label Text="Draw your signature below" FontSize="14" TextColor="Gray" />
+
+            <controls:SignaturePadView
+                x:Name="SignaturePad"
+                HeightRequest="220"
+                HorizontalOptions="Fill"
+                ViewBackgroundColor="#F0F0F0"
+                InkColor="Black"
+                StrokeWidth="3" />
+
+            <!-- Action buttons -->
+            <HorizontalStackLayout Spacing="12" HorizontalOptions="Fill">
+                <Button Text="Clear"
+                        Clicked="OnClearClicked"
+                        HorizontalOptions="FillAndExpand"
+                        BackgroundColor="#E53935"
+                        TextColor="White" />
+                <Button Text="Export PNG"
+                        Clicked="OnExportPngClicked"
+                        HorizontalOptions="FillAndExpand"
+                        BackgroundColor="#1E88E5"
+                        TextColor="White" />
+                <Button Text="Export JPEG"
+                        Clicked="OnExportJpegClicked"
+                        HorizontalOptions="FillAndExpand"
+                        BackgroundColor="#43A047"
+                        TextColor="White" />
+            </HorizontalStackLayout>
+
+            <!-- Configuration -->
+            <Frame BorderColor="LightGray" CornerRadius="8" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Configuration" FontSize="13" FontAttributes="Bold" TextColor="Gray" />
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="8">
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="Ink Colour" VerticalOptions="Center" />
+                        <Picker x:Name="InkColorPicker"
+                                Grid.Row="0" Grid.Column="1"
+                                SelectedIndexChanged="OnInkColorChanged">
+                            <Picker.Items>
+                                <x:String>Black</x:String>
+                                <x:String>Blue</x:String>
+                                <x:String>Red</x:String>
+                                <x:String>Dark Green</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Stroke Width" VerticalOptions="Center" />
+                        <Picker x:Name="StrokeWidthPicker"
+                                Grid.Row="1" Grid.Column="1"
+                                SelectedIndexChanged="OnStrokeWidthChanged">
+                            <Picker.Items>
+                                <x:String>1 px (Fine)</x:String>
+                                <x:String>3 px (Normal)</x:String>
+                                <x:String>5 px (Bold)</x:String>
+                                <x:String>8 px (Extra Bold)</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="View Background" VerticalOptions="Center" />
+                        <Picker x:Name="ViewBgPicker"
+                                Grid.Row="2" Grid.Column="1"
+                                SelectedIndexChanged="OnViewBgChanged">
+                            <Picker.Items>
+                                <x:String>Light Gray</x:String>
+                                <x:String>White</x:String>
+                                <x:String>Dark Gray</x:String>
+                                <x:String>Cream</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Export Background" VerticalOptions="Center" />
+                        <Picker x:Name="ExportBgPicker"
+                                Grid.Row="3" Grid.Column="1"
+                                SelectedIndexChanged="OnExportBgChanged">
+                            <Picker.Items>
+                                <x:String>White</x:String>
+                                <x:String>Transparent (PNG)</x:String>
+                                <x:String>Yellow</x:String>
+                                <x:String>Light Blue</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Export preview -->
+            <Label x:Name="StatusLabel"
+                   Text="Export a signature to see the preview below."
+                   FontSize="13"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center" />
+
+            <Frame x:Name="PreviewFrame"
+                   BorderColor="LightGray"
+                   CornerRadius="8"
+                   Padding="8"
+                   IsVisible="False">
+                <VerticalStackLayout Spacing="4">
+                    <Label x:Name="PreviewLabel" FontSize="12" TextColor="Gray" HorizontalTextAlignment="Center" />
+                    <Image x:Name="SignaturePreview"
+                           HeightRequest="180"
+                           HorizontalOptions="Fill"
+                           Aspect="AspectFit" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

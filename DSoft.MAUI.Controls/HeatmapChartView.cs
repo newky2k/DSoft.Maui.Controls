@@ -264,10 +264,13 @@ public class HeatmapChartView : ContentView
         float xLabelMargin = xLabelHeight;
 
         // --- Grid area ---
-        float gridLeft = yLabelMargin;
-        float gridTop = 0f;
-        float gridRight = info.Width;
-        float gridBottom = info.Height - xLabelMargin;
+        // When grid lines are drawn (stroke centred on the rect boundary), inset by half the
+        // stroke width so the outer edge of the border is never clipped by the canvas bounds.
+        float gridInset = ShowGridLines ? 0.5f : 0f;
+        float gridLeft = yLabelMargin + gridInset;
+        float gridTop = gridInset;
+        float gridRight = info.Width - gridInset;
+        float gridBottom = info.Height - xLabelMargin - gridInset;
 
         float gridWidth = gridRight - gridLeft;
         float gridHeight = gridBottom - gridTop;
