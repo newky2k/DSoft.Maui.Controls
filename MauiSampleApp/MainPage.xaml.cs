@@ -70,6 +70,13 @@
             await Navigation.PushModalAsync(new NavigationPage(dlg));
 
         }
+
+        private async void OnSignaturePadPageClicked(object sender, EventArgs e)
+        {
+            var dlg = new SignaturePadPage();
+
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
+        }
     }
 
 }
