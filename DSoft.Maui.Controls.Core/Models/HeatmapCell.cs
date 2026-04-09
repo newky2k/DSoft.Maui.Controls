@@ -16,5 +16,8 @@ public class HeatmapCell
 
     /// <summary>Fill colour for this cell.</summary>
     public Color Color { get; set; }
+    
+    /// <summary>The value associated with the cell</summary>
+    public double Value { get; set; }
 }
 

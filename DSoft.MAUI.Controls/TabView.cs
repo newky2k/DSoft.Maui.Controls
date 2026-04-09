@@ -1,13 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using DSoft.Maui.Controls.Core.Enums;
 using DSoft.Maui.Controls.Events;
 
 namespace DSoft.Maui.Controls;
-
-/// <summary>
-/// Controls whether the tab bar appears above or below the content area.
-/// </summary>
-public enum TabPosition { Top, Bottom }
 
 /// <summary>
 /// A tab container that uses a <see cref="SegmentedControl"/> as the tab bar and displays

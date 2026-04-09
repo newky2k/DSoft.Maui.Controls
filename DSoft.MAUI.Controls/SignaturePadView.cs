@@ -1,19 +1,9 @@
+using DSoft.Maui.Controls.Core.Enums;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
 
 namespace DSoft.Maui.Controls;
-
-/// <summary>
-/// Specifies the image format for a signature export.
-/// </summary>
-public enum SignatureImageFormat
-{
-    /// <summary>PNG format — lossless, supports transparency.</summary>
-    Png,
-    /// <summary>JPEG format — lossy, no transparency.</summary>
-    Jpeg
-}
 
 /// <summary>
 /// A SkiaSharp-based signature capture view. Users draw with a finger or stylus and the result
