@@ -1,4 +1,5 @@
 using DSoft.Maui.Controls;
+using DSoft.Maui.Controls.Core.Enums;
 
 namespace MauiSampleApp;
 

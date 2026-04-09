@@ -9,4 +9,8 @@
       <PackageReference Include="Microsoft.Maui.Graphics" Version="9.0.110" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Enums\" />
+    </ItemGroup>
+
 </Project>
