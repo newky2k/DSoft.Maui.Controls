@@ -1,12 +1,8 @@
-﻿using DSoft.Maui.Controls.Extensions;
+﻿#nullable enable
+using DSoft.Maui.Controls.Extensions;
 using SkiaSharp.Views.Maui.Controls;
 using SkiaSharp.Views.Maui;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MColor = Microsoft.Maui.Graphics.Colors;
 using DSoft.Maui.Controls.TouchTracking;
 
@@ -32,9 +28,9 @@ namespace DSoft.Maui.Controls.ColorPicker
 				return results;
 			}
 		}
+		
 		#endregion
-
-
+		
 		#region Bindable Properties
 
 		#region ColorsProperty
@@ -68,6 +64,37 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 
 		#endregion
+
+		#region SelectedColor
+
+		public static readonly BindableProperty SelectedColorProperty = BindableProperty.Create(
+			nameof(SelectedColor),
+			typeof(Color),
+			typeof(ColorWheelView),
+			MColor.Transparent,
+			BindingMode.TwoWay,
+			propertyChanged: OnSelectedColorChanged);
+
+		/// <summary>
+		/// Gets or sets the currently selected color. Setting this from a binding will move the indicator to the matching position on the wheel.
+		/// </summary>
+		public Color SelectedColor
+		{
+			get => (Color)GetValue(SelectedColorProperty);
+			set => SetValue(SelectedColorProperty, value);
+		}
+
+		private static void OnSelectedColorChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			var view = (ColorWheelView)bindable;
+			if (view._updatingFromTouch) return;
+
+			if (newValue is Color color && color != MColor.Transparent)
+				view.SetTouchLocationFromColor(color);
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Fields
@@ -122,16 +149,24 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 		#region Colors
 
-		//private List<Color> _colors = DefaultColors;
-
 		private SKColor _selectedColor = MColor.Transparent.ToSKColor();
 		#endregion
 
+		#region State
+
+		private bool _updatingFromTouch;
+		private Color? _pendingSelectedColor;
+
+		#endregion
+
 		#region Events
+
 		public event EventHandler<ColorChangedEventArgs> ColorChanged;
+
 		#endregion
 
 		#endregion
+		
 		public ColorWheelView()
 		{
 
@@ -170,6 +205,9 @@ namespace DSoft.Maui.Controls.ColorPicker
 
 			_center = new SKPoint(info.Rect.MidX, info.Rect.MidY);
 			_radius = (Math.Min(info.Width, info.Height) - _shrinkage) / 2;
+
+			if (_pendingSelectedColor is not null)
+				SetTouchLocationFromColor(_pendingSelectedColor);
 
 			_circlePalette.Shader = SKShader.CreateSweepGradient(_center, colorRange, null);
 			canvas.DrawCircle(_center, _radius, _circlePalette);
@@ -214,7 +252,12 @@ namespace DSoft.Maui.Controls.ColorPicker
 						_selectedColor = bmp.GetPixel(0, 0);
 						_touchCircleFill.Color = _selectedColor;
 
-						ColorChanged?.Invoke(this, new ColorChangedEventArgs(_selectedColor.ToMauiColor()));
+						var mauiColor = _selectedColor.ToMauiColor();
+						ColorChanged?.Invoke(this, new ColorChangedEventArgs(mauiColor));
+
+						_updatingFromTouch = true;
+						SelectedColor = mauiColor;
+						_updatingFromTouch = false;
 					}
 				}
 			}
@@ -243,6 +286,40 @@ namespace DSoft.Maui.Controls.ColorPicker
 			{
 				_colorChanged = false;
 			}
+		}
+
+		/// <summary>
+		/// Converts a color back to a touch position on the wheel using hue (angle) and lightness (radius).
+		/// The default color wheel sweeps hues in reverse, so angle = (360 - hue) % 360.
+		/// Lightness maps from 50 (fully saturated edge) to 100 (white center).
+		/// </summary>
+		private void SetTouchLocationFromColor(Color color)
+		{
+			if (_radius == 0 || _center == SKPoint.Empty)
+			{
+				_pendingSelectedColor = color;
+				return;
+			}
+
+			_pendingSelectedColor = null;
+
+			var skColor = color.ToSKColor();
+			skColor.ToHsl(out float h, out _, out float l);
+
+			// The sweep gradient reverses hues (H=360..0 maps to angle 0°..360°)
+			var angleRad = (360f - h) % 360f * (float)(Math.PI / 180.0);
+
+			// L=50 → pure hue at edge, L=100 → white at center
+			var radius = Math.Min(_radius, Math.Max(0f, (100f - l) / 50f * _radius));
+
+			_touchLocation = new SKPoint(
+				_center.X + (float)Math.Cos(angleRad) * radius,
+				_center.Y + (float)Math.Sin(angleRad) * radius);
+
+			_selectedColor = skColor;
+			_touchCircleFill.Color = _selectedColor;
+			_colorChanged = false;
+			_canvasView.InvalidateSurface();
 		}
 
 	}

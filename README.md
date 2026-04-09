@@ -659,6 +659,74 @@ When `GetImageAsync` is called, a new off-screen `SKSurface` is created at the r
 
 ---
 
+# ColorWheelView
+
+`ColorWheelView` is a SkiaSharp-based interactive color wheel. The wheel renders a full HSL hue sweep with an optional white radial gradient overlay at the centre, allowing users to pick any hue at varying saturation levels. A circular indicator follows the touch point and reflects the selected color.
+
+## Basic Usage
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:ColorWheelView
+    x:Name="ColorWheel"
+    HeightRequest="300"
+    WidthRequest="300"
+    HorizontalOptions="Center"
+    SelectedColor="{Binding PickedColor}"
+    ColorChanged="OnColorChanged" />
+```
+
+## MVVM / Data Binding
+
+`SelectedColor` is a two-way bindable property. Setting it from a view-model moves the indicator to the matching position on the wheel; touching the wheel updates the binding automatically.
+
+```xaml
+<controls:ColorWheelView
+    SelectedColor="{Binding PickedColor, Mode=TwoWay}"
+    HeightRequest="300"
+    WidthRequest="300" />
+```
+
+```csharp
+// ViewModel
+[ObservableProperty]
+private Color _pickedColor = Colors.Red;
+```
+
+When `SelectedColor` is set before the wheel has been laid out (e.g. on page load), the position is calculated and applied as soon as the first paint completes.
+
+## Code-Behind Event
+
+```csharp
+private void OnColorChanged(object sender, ColorChangedEventArgs e)
+{
+    MyPreviewBox.BackgroundColor = e.Color;
+}
+```
+
+## Bindable Properties Reference
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `SelectedColor` | `Color` | `Transparent` | The currently selected color. Two-way bindable — setting this moves the indicator to the corresponding wheel position. |
+| `Colors` | `IEnumerable<Color>` | 8 evenly-spaced HSL hues | The hue gradient colors used to build the sweep. Replace to create a restricted palette wheel. |
+| `ShowWhite` | `bool` | `true` | When `true`, overlays a radial white-to-transparent gradient at the centre, allowing desaturated/pastel colors to be picked. |
+
+## Events
+
+| Event | Args type | Description |
+|---|---|---|
+| `ColorChanged` | `ColorChangedEventArgs` | Raised when the user touches the wheel and the selected color changes. `e.Color` contains the new `Color` value. |
+
+## How It Works
+
+The wheel is drawn on an `SKCanvasView` using two overlaid shaders: a `SKShader.CreateSweepGradient` for the hue ring and a `SKShader.CreateRadialGradient` for the white centre fade. Touch is tracked via `TouchEffect`; when a touch point lands inside the wheel radius, the pixel at that location is sampled directly from the rendered surface to determine the exact color.
+
+When `SelectedColor` is set programmatically the reverse mapping is applied: the color's HSL hue determines the sweep angle (`angle = (360 − H) % 360°`) and its lightness determines the radial distance from the center (`L = 50` → edge, `L = 100` → white center). The indicator circle is repositioned accordingly and the canvas is invalidated.
+
+---
+
 # TabView
 
 `TabView` is a tab container that uses the built-in `SegmentedControl` as its tab bar. Add `TabItem` children in XAML — the tab bar is built automatically from their titles and selecting a segment instantly shows the matching content view.

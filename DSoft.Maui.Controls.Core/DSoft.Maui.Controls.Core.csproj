@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <Description>Core models and types for DSoft.Maui.Controls</Description>
     </PropertyGroup>
 
     <ItemGroup>
