@@ -33,6 +33,15 @@ public class SignaturePadView : ContentView
 
     #endregion
 
+    #region Events
+
+    /// <summary>
+    /// Raised when strokes are added to or cleared from the canvas.
+    /// </summary>
+    public event EventHandler SignatureChanged;
+
+    #endregion
+
     #region Bindable Properties
 
     #region InkColor
@@ -159,10 +168,14 @@ public class SignaturePadView : ContentView
             case SKTouchAction.Cancelled:
             case SKTouchAction.Exited:
                 // Android can fire Exited when touch leaves the view boundary mid-stroke.
-                _activeStrokes.Remove(e.Id);
+                var hadStroke = _activeStrokes.Remove(e.Id);
                 _canvasView.InvalidateSurface();
                 if (_activeStrokes.Count == 0)
+                {
                     SetParentScrollingEnabled(true);
+                    if (hadStroke)
+                        SignatureChanged?.Invoke(this, EventArgs.Empty);
+                }
                 break;
         }
 
@@ -274,6 +287,40 @@ public class SignaturePadView : ContentView
         _strokes.Clear();
         _activeStrokes.Clear();
         _canvasView.InvalidateSurface();
+        SignatureChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Returns the current canvas size in pixels (the native backing-buffer dimensions).
+    /// This is the natural export size — pass it to <see cref="GetImageAsync(int,int,SignatureImageFormat,Color)"/>
+    /// or call the <see cref="GetImageAsync(SignatureImageFormat,Color)"/> overload which uses it automatically.
+    /// Returns <see cref="Size.Zero"/> before the view has been laid out.
+    /// </summary>
+    public Size GetCanvasSize()
+    {
+        var size = _canvasView.CanvasSize;
+        return new Size(size.Width, size.Height);
+    }
+
+    /// <summary>
+    /// Exports the drawn signature as an encoded image at the view's current canvas resolution.
+    /// </summary>
+    /// <param name="format">
+    /// Output format: <see cref="SignatureImageFormat.Png"/> (default) or
+    /// <see cref="SignatureImageFormat.Jpeg"/>.
+    /// </param>
+    /// <param name="backgroundColor">
+    /// Background colour for the exported image. Defaults to <see cref="Colors.White"/>.
+    /// Pass <see cref="Colors.Transparent"/> with <see cref="SignatureImageFormat.Png"/> for a
+    /// transparent background.
+    /// </param>
+    /// <returns>The encoded image as a byte array, or an empty array if nothing has been drawn.</returns>
+    public Task<byte[]> GetImageAsync(
+        SignatureImageFormat format = SignatureImageFormat.Png,
+        Color backgroundColor = null)
+    {
+        var size = _canvasView.CanvasSize;
+        return GetImageAsync((int)size.Width, (int)size.Height, format, backgroundColor);
     }
 
     /// <summary>
