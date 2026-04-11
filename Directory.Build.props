@@ -14,13 +14,17 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Authors>newky2k</Authors>
 		<Company>newky2k</Company>
-		
+		<PackageIcon>DSIcon.png</PackageIcon>
 		<PackageProjectUrl>https://github.com/newky2k/DSoft.Maui.Controls</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/newky2k/DSoft.Maui.Controls</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\DSIcon.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
