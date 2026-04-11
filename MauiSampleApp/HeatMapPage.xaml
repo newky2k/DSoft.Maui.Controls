@@ -25,7 +25,7 @@
                                    CellSpacing="4"
                                    ShowGridLines="True"
                                    EmptyCellColor="Transparent"
-                                   XLabelRotation="0" />
+                                   XLabelRotation="90" />
             
     </Grid>
 </ContentPage>

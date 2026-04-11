@@ -162,11 +162,13 @@ public class HeatmapChartView : ContentView
 
     public static readonly BindableProperty XLabelRotationProperty = BindableProperty.Create(
         nameof(XLabelRotation), typeof(float), typeof(HeatmapChartView), 0f,
-        propertyChanged: RedrawCanvas);
+        propertyChanged: RedrawCanvas,
+        coerceValue: (_, value) => System.Math.Clamp((float)value, -90f, 90f));
 
     /// <summary>
     /// Clockwise rotation in degrees applied to each X-axis label.
     /// Use 45 or 90 for long labels that would otherwise overlap.
+    /// Clamped to the range [-90, 90].
     /// </summary>
     public float XLabelRotation
     {
@@ -346,14 +348,18 @@ public class HeatmapChartView : ContentView
             }
             else
             {
-                // Rotate around the top-centre of the label area
+                // Rotate around the top-centre of the label area.
+                // For positive rotation the local +x axis points down-right, so text anchored
+                // at x=0 extends below the grid.  For negative rotation the local +x axis points
+                // up-right, so we anchor at x=-textWidth instead, keeping the text below the grid.
                 float pivotX = cellMidX;
                 float pivotY = gridBottom + (4f * scale);
+                float textAnchorX = xRotation < 0f ? -textWidth : 0f;
 
                 canvas.Save();
                 canvas.Translate(pivotX, pivotY);
                 canvas.RotateDegrees(xRotation);
-                canvas.DrawText(label, 0, -fontMetrics.Ascent, labelPaint);
+                canvas.DrawText(label, textAnchorX, -fontMetrics.Ascent, labelPaint);
                 canvas.Restore();
             }
         }
