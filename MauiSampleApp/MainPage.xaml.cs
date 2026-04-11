@@ -84,6 +84,13 @@
 
             await Navigation.PushModalAsync(new NavigationPage(dlg));
         }
+
+        private async void OnDataGridPageClicked(object sender, EventArgs e)
+        {
+            var dlg = new DataGridPage();
+
+            await Navigation.PushModalAsync(new NavigationPage(dlg));
+        }
     }
 
 }

@@ -104,6 +104,21 @@ public class TabView : ContentView
 
     #endregion
 
+    #region IsTabBarVisible
+
+    public static readonly BindableProperty IsTabBarVisibleProperty = BindableProperty.Create(
+        nameof(IsTabBarVisible), typeof(bool), typeof(TabView), true,
+        propertyChanged: (b, _, _) => ((TabView)b).UpdateTabBarVisibility());
+
+    /// <summary>Gets or sets whether the segmented control tab bar is visible. Default is <c>true</c>.</summary>
+    public bool IsTabBarVisible
+    {
+        get => (bool)GetValue(IsTabBarVisibleProperty);
+        set => SetValue(IsTabBarVisibleProperty, value);
+    }
+
+    #endregion
+
     #endregion
 
     #region Events
@@ -151,6 +166,19 @@ public class TabView : ContentView
 
         _rootGrid.Children.Add(_segmentedControl);
         _rootGrid.Children.Add(_contentGrid);
+
+        UpdateTabBarVisibility();
+    }
+
+    private void UpdateTabBarVisibility()
+    {
+        var visible = IsTabBarVisible;
+        _segmentedControl.IsVisible = visible;
+
+        // Collapse or restore the row that holds the segmented control
+        var tabRow = TabPosition == TabPosition.Top ? 0 : 1;
+        _rootGrid.RowDefinitions[tabRow] = new RowDefinition(visible ? GridLength.Auto : new GridLength(0));
+        _rootGrid.RowSpacing = visible ? TabSpacing : 0;
     }
 
     #endregion

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="http://dsoft.maui/schemas/controls"
+             x:Class="MauiSampleApp.DataGridPage"
+             Title="Data Grid">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="*,Auto" RowSpacing="0" Padding="16">
+
+        <controls:DataGridView x:Name="DataGrid"
+                               Grid.Row="0"
+                               RowSelected="OnRowSelected" />
+
+        <Border Grid.Row="1"
+                Margin="0,12,0,0"
+                Padding="12"
+                BackgroundColor="#F5F5F5"
+                StrokeShape="RoundRectangle 8"
+                Stroke="#DDDDDD">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Selected Row" FontAttributes="Bold" FontSize="13" TextColor="Gray" />
+                <Label x:Name="SelectionLabel"
+                       Text="Tap a row to see its details here."
+                       FontSize="14"
+                       TextColor="#333333" />
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

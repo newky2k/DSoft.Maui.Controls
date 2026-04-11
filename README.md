@@ -32,7 +32,7 @@ Features:
 - `SignaturePadView`
     - Freehand signature capture with configurable ink, stroke width and background; exports to PNG or JPEG at any size
 - `TabView`
-    - Tab container using `SegmentedControl` as the tab bar; supports top/bottom tab position, two-way `SelectedIndex` binding, and external styling of the tab bar via `SegmentedControlStyle`
+    - Tab container using `SegmentedControl` as the tab bar; supports top/bottom tab position, two-way `SelectedIndex` binding, external styling via `SegmentedControlStyle`, and hiding the tab bar via `IsTabBarVisible`
 
 This packages also contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
@@ -789,6 +789,24 @@ Pass a `Style` targeting `SegmentedControl` to `SegmentedControlStyle` to fully 
 </controls:TabView>
 ```
 
+## Hiding the Tab Bar
+
+Set `IsTabBarVisible` to `false` to hide the segmented control entirely. The row it occupied collapses so no gap is left behind. This is useful when you want to drive tab selection purely from a view-model or an external control without showing the built-in tab bar.
+
+```xaml
+<!-- Hide statically -->
+<controls:TabView IsTabBarVisible="False" SelectedIndex="{Binding ActiveTab}">
+    ...
+</controls:TabView>
+```
+
+```xaml
+<!-- Toggle from a view-model -->
+<controls:TabView IsTabBarVisible="{Binding ShowTabs}" SelectedIndex="{Binding ActiveTab}">
+    ...
+</controls:TabView>
+```
+
 ## Bindable Properties Reference
 
 | Property | Type | Default | Description |
@@ -797,6 +815,7 @@ Pass a `Style` targeting `SegmentedControl` to `SegmentedControlStyle` to fully 
 | `TabPosition` | `TabPosition` | `Top` | Places the tab bar above (`Top`) or below (`Bottom`) the content area. |
 | `TabSpacing` | `double` | `8` | Gap in device-independent units between the tab bar and the content area. |
 | `SegmentedControlStyle` | `Style` | `null` | A MAUI `Style` targeting `SegmentedControl` applied to the internal tab bar. |
+| `IsTabBarVisible` | `bool` | `true` | When `false`, hides the segmented control and collapses its row so no space is reserved. |
 
 ## Events
 
