@@ -94,6 +94,14 @@ public class DataGridView : ContentView
     public static readonly BindableProperty ShowColumnSeparatorsProperty =
         BindableProperty.Create(nameof(ShowColumnSeparators), typeof(bool), typeof(DataGridView), true);
 
+    public static readonly BindableProperty HorizontalScrollEnabledProperty =
+        BindableProperty.Create(nameof(HorizontalScrollEnabled), typeof(bool), typeof(DataGridView), false,
+            propertyChanged: OnLayoutPropertyChanged);
+
+    public static readonly BindableProperty DefaultColumnWidthProperty =
+        BindableProperty.Create(nameof(DefaultColumnWidth), typeof(double), typeof(DataGridView), 120.0,
+            propertyChanged: OnLayoutPropertyChanged);
+
     #endregion
 
     #region Public Properties
@@ -169,6 +177,26 @@ public class DataGridView : ContentView
         set => SetValue(ShowColumnSeparatorsProperty, value);
     }
 
+    /// <summary>
+    /// When true the grid scrolls horizontally as well as vertically.
+    /// The header and rows scroll together.
+    /// </summary>
+    public bool HorizontalScrollEnabled
+    {
+        get => (bool)GetValue(HorizontalScrollEnabledProperty);
+        set => SetValue(HorizontalScrollEnabledProperty, value);
+    }
+
+    /// <summary>
+    /// Width (in device-independent units) used for columns that have no explicit Width set
+    /// when HorizontalScrollEnabled is true. Has no effect when horizontal scroll is disabled.
+    /// </summary>
+    public double DefaultColumnWidth
+    {
+        get => (double)GetValue(DefaultColumnWidthProperty);
+        set => SetValue(DefaultColumnWidthProperty, value);
+    }
+
     /// <summary>The currently selected DataRow, or null if nothing is selected</summary>
     public DataRow? SelectedItem
     {
@@ -197,6 +225,7 @@ public class DataGridView : ContentView
     private readonly Grid _rootGrid;
     private readonly Grid _headerGrid;
     private readonly CollectionView _collectionView;
+    private readonly ScrollView _horizontalScroll;
 
     private DataTable? _currentTable;
     private DataRow? _selectedItem;
@@ -236,6 +265,12 @@ public class DataGridView : ContentView
         _rootGrid.Add(_headerGrid, 0, 0);
         _rootGrid.Add(_collectionView, 0, 1);
 
+        _horizontalScroll = new ScrollView
+        {
+            Orientation = ScrollOrientation.Horizontal,
+            Content = _rootGrid
+        };
+
         Content = _rootGrid;
     }
 
@@ -270,6 +305,7 @@ public class DataGridView : ContentView
             return;
         }
 
+        UpdateScrollWrapper();
         BuildHeader(_currentTable);
         BuildRows(_currentTable);
     }
@@ -277,6 +313,52 @@ public class DataGridView : ContentView
     #endregion
 
     #region Private Methods
+
+    private void UpdateScrollWrapper()
+    {
+        if (HorizontalScrollEnabled)
+        {
+            if (!ReferenceEquals(Content, _horizontalScroll))
+            {
+                _horizontalScroll.Content = _rootGrid;
+                Content = _horizontalScroll;
+            }
+        }
+        else
+        {
+            if (!ReferenceEquals(Content, _rootGrid))
+                Content = _rootGrid;
+
+            _rootGrid.WidthRequest = -1;
+        }
+    }
+
+    private double ComputeContentWidth(DataTable table)
+    {
+        double total = 0;
+        foreach (DataColumn col in table.Columns)
+        {
+            var w = GetColumnWidth(col);
+            total += w > 0 ? w : DefaultColumnWidth;
+        }
+        return total;
+    }
+
+    /// <summary>
+    /// Returns the GridLength for a column, taking HorizontalScrollEnabled into account.
+    /// When horizontal scroll is active every column must have an absolute width so the
+    /// total content width is well-defined in an unconstrained horizontal pass.
+    /// </summary>
+    private GridLength GetColumnGridLength(DataColumn col)
+    {
+        var w = GetColumnWidth(col);
+        if (w > 0)
+            return new GridLength(w, GridUnitType.Absolute);
+
+        return HorizontalScrollEnabled
+            ? new GridLength(DefaultColumnWidth, GridUnitType.Absolute)
+            : GridLength.Star;
+    }
 
     private static void OnDataSourceChanged(BindableObject bindable, object oldValue, object newValue)
     {
@@ -300,16 +382,18 @@ public class DataGridView : ContentView
         _headerGrid.HeightRequest = HeaderHeight;
         _headerGrid.ColumnSpacing = 0;
 
+        if (HorizontalScrollEnabled)
+            _rootGrid.WidthRequest = ComputeContentWidth(table);
+        else
+            _rootGrid.WidthRequest = -1;
+
         for (int i = 0; i < table.Columns.Count; i++)
         {
             var col = table.Columns[i];
-            var width = GetColumnWidth(col);
 
             _headerGrid.ColumnDefinitions.Add(new ColumnDefinition
             {
-                Width = width > 0
-                    ? new GridLength(width, GridUnitType.Absolute)
-                    : GridLength.Star
+                Width = GetColumnGridLength(col)
             });
 
             var headerLabel = new Label
@@ -381,13 +465,10 @@ public class DataGridView : ContentView
             for (int i = 0; i < columnCount; i++)
             {
                 var col = table.Columns[i];
-                var width = GetColumnWidth(col);
 
                 rowGrid.ColumnDefinitions.Add(new ColumnDefinition
                 {
-                    Width = width > 0
-                        ? new GridLength(width, GridUnitType.Absolute)
-                        : GridLength.Star
+                    Width = GetColumnGridLength(col)
                 });
 
                 var label = new Label

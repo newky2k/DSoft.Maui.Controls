@@ -13,6 +13,7 @@
 
         <controls:DataGridView x:Name="DataGrid"
                                Grid.Row="0"
+                               HorizontalScrollEnabled="True"
                                RowSelected="OnRowSelected" />
 
         <Border Grid.Row="1"

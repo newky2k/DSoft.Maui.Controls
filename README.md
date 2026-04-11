@@ -33,6 +33,8 @@ Features:
     - Freehand signature capture with configurable ink, stroke width and background; exports to PNG or JPEG at any size
 - `TabView`
     - Tab container using `SegmentedControl` as the tab bar; supports top/bottom tab position, two-way `SelectedIndex` binding, external styling via `SegmentedControlStyle`, and hiding the tab bar via `IsTabBarVisible`
+- `DataGridView`
+    - `System.Data.DataTable`-backed data grid with column headers, alternating row colours, row selection, column sorting, and optional horizontal scrolling
 
 This packages also contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
@@ -822,3 +824,155 @@ Set `IsTabBarVisible` to `false` to hide the segmented control entirely. The row
 | Event | Description |
 |---|---|
 | `TabSelected` | Raised when the user taps a tab. The `EventArgs` value is the new selected index (`int`). |
+
+---
+
+# DataGridView
+
+`DataGridView` is a pure-MAUI data grid backed by a `System.Data.DataTable`. It renders column headers, alternating row backgrounds, row selection, column sorting, and optional horizontal scrolling — all without any platform-specific code.
+
+## Basic Usage
+
+Create a `DataTable`, set column metadata via `ExtendedProperties`, populate rows, then assign it to `DataSource`:
+
+```csharp
+var table = new DataTable("Orders");
+
+var idCol = table.Columns.Add("ID", typeof(int));
+idCol.ExtendedProperties["Width"]     = 60.0;   // fixed width in dip
+idCol.ExtendedProperties["AllowSort"] = true;
+
+var nameCol = table.Columns.Add("Product", typeof(string));
+// No Width → Star (fills remaining space)
+
+var priceCol = table.Columns.Add("Price", typeof(string));
+priceCol.ExtendedProperties["Width"]     = 90.0;
+priceCol.ExtendedProperties["AllowSort"] = false; // header not tappable
+
+table.Rows.Add(1, "Widget A", "$9.99");
+table.Rows.Add(2, "Widget B", "$14.99");
+
+MyGrid.DataSource = table;
+```
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:DataGridView x:Name="MyGrid"
+                       RowSelected="OnRowSelected" />
+```
+
+```csharp
+private void OnRowSelected(object sender, DataGridRowSelectedEventArgs e)
+{
+    Console.WriteLine($"Row {e.RowIndex}: {e.Row["Product"]}");
+}
+```
+
+## Column Metadata
+
+Column display behaviour is controlled via `DataColumn.ExtendedProperties`:
+
+| Key | Type | Description |
+|---|---|---|
+| `"Width"` | `double` | Fixed column width in device-independent units. Omit (or set no value) for proportional Star sizing. |
+| `"AllowSort"` | `bool` | Whether tapping the column header triggers a sort. Defaults to `true` when not set. |
+
+Columns without a `"Width"` entry share the remaining space equally using Star sizing (or use `DefaultColumnWidth` when `HorizontalScrollEnabled` is `true`).
+
+## Sorting
+
+Tapping a sortable column header sorts the `DataTable.DefaultView` ascending. Tapping the same header again reverses to descending. Tapping a different header resets the sort direction to ascending for that column.
+
+The `ColumnSorted` event is raised after each sort so you can react in code:
+
+```csharp
+MyGrid.ColumnSorted += (s, e) =>
+    Console.WriteLine($"Sorted by column index {e.ColumnIndex}");
+```
+
+## Row Selection
+
+Tapping a row highlights it with `SelectionColor` and raises `RowSelected`. Only one row can be selected at a time.
+
+```csharp
+MyGrid.RowSelected += (s, e) =>
+{
+    // e.Row    — the selected DataRow
+    // e.RowIndex — zero-based position in the current sort order
+};
+```
+
+Clear the selection programmatically without firing the event:
+
+```csharp
+MyGrid.ClearSelection();
+```
+
+## Horizontal Scrolling
+
+Set `HorizontalScrollEnabled="True"` to enable horizontal scrolling. The header and rows scroll together. When enabled, Star-width columns use `DefaultColumnWidth` (default `120`) as their absolute width so the total content width can be computed.
+
+```xaml
+<controls:DataGridView DataSource="{Binding Table}"
+                       HorizontalScrollEnabled="True"
+                       DefaultColumnWidth="150" />
+```
+
+## Runtime Updates
+
+Call `Reload()` after modifying the `DataTable`'s rows or columns at runtime:
+
+```csharp
+table.Rows.Add(3, "Widget C", "$19.99");
+MyGrid.Reload();
+```
+
+Assigning a new `DataTable` to `DataSource` triggers a full rebuild automatically.
+
+## Bindable Properties Reference
+
+### Data
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `DataSource` | `DataTable` | `null` | The table that provides columns and rows. Assigning a new value rebuilds the grid and resets sort state. |
+
+### Layout
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `RowHeight` | `double` | `44` | Height of each data row in device-independent units. |
+| `HeaderHeight` | `double` | `44` | Height of the column header row. |
+| `HorizontalScrollEnabled` | `bool` | `false` | When `true`, wraps the grid in a horizontal `ScrollView` so wide tables can be scrolled. Header and rows scroll together. |
+| `DefaultColumnWidth` | `double` | `120` | Width applied to Star columns when `HorizontalScrollEnabled` is `true`. Has no effect when horizontal scroll is disabled. |
+
+### Colours
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `HeaderBackgroundColor` | `Color` | `#CCCCCC` | Background colour of the header row. |
+| `HeaderTextColor` | `Color` | `Black` | Text colour of the column header labels. |
+| `RowBackgroundColor` | `Color` | `White` | Background colour for even-indexed data rows. |
+| `AlternateRowBackgroundColor` | `Color` | `#F2F2F2` | Background colour for odd-indexed data rows. |
+| `SelectionColor` | `Color` | `#ADD8E6` | Background colour of the currently selected row. |
+| `CellTextColor` | `Color` | `Black` | Text colour of data cells. |
+| `SeparatorColor` | `Color` | `#DDDDDD` | Colour of row separators and optional column separators. |
+| `ShowColumnSeparators` | `bool` | `true` | When `true`, draws a 1px vertical separator between columns in both the header and data rows. |
+
+## Events
+
+| Event | Args type | Description |
+|---|---|---|
+| `RowSelected` | `DataGridRowSelectedEventArgs` | Raised when the user taps a data row. `e.Row` is the `DataRow`; `e.RowIndex` is its zero-based position. |
+| `ColumnSorted` | `DataGridColumnSortedEventArgs` | Raised after the grid re-sorts following a header tap. `e.ColumnIndex` is the zero-based column that was tapped. |
+
+## How It Works
+
+`DataGridView` is a `ContentView` whose content is a two-row `Grid`: the top row holds a `Grid`-based header (rebuilt whenever the `DataSource` changes) and the bottom row holds a `CollectionView` for virtualised row rendering. Each row is a `ContentView` wrapping an inner column `Grid` that mirrors the header's column definitions exactly.
+
+Selection state is tracked through a lightweight `DataRowViewModel` wrapper (one per row) that implements `INotifyPropertyChanged`. When a row is tapped the wrapper's `IsSelected` flag is toggled and the row's background updates immediately without a full rebuild.
+
+Sorting is applied to `DataTable.DefaultView.Sort` and `BuildRows` is called to refresh the `CollectionView` items source in the new order.
+
+When `HorizontalScrollEnabled` is `true`, the inner `_rootGrid` is placed inside a `ScrollView` with `Orientation = Horizontal` and given a `WidthRequest` equal to the sum of all column widths. Star columns are converted to Absolute widths using `DefaultColumnWidth` so the total content width is well-defined in the unconstrained horizontal measurement pass.
