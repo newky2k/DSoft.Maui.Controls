@@ -352,14 +352,17 @@ public class HeatmapChartView : ContentView
                 // For positive rotation the local +x axis points down-right, so text anchored
                 // at x=0 extends below the grid.  For negative rotation the local +x axis points
                 // up-right, so we anchor at x=-textWidth instead, keeping the text below the grid.
+                // We offset local-y by -textHeight/2 so the glyph height is centred around the
+                // pivot column, which is especially visible at ±90°.
                 float pivotX = cellMidX;
                 float pivotY = gridBottom + (4f * scale);
                 float textAnchorX = xRotation < 0f ? -textWidth : 0f;
+                float centreOffset = -textHeight / 2f;
 
                 canvas.Save();
                 canvas.Translate(pivotX, pivotY);
                 canvas.RotateDegrees(xRotation);
-                canvas.DrawText(label, textAnchorX, -fontMetrics.Ascent, labelPaint);
+                canvas.DrawText(label, textAnchorX, -fontMetrics.Ascent + centreOffset, labelPaint);
                 canvas.Restore();
             }
         }
