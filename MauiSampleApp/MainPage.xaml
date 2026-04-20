@@ -5,16 +5,19 @@
              x:Class="MauiSampleApp.MainPage"
              Title="Demo">
 
-    <VerticalStackLayout>
-        <Button Margin="30,5,30,5" Text="Charts" Clicked="OnChartsButtonClicked" />
-        <Button Margin="30,5,30,5" Text="Controls" Clicked="OnControlsClicked" />
-        <Button Margin="30,5,30,5" Text="PinchPan" Clicked="OnPanZoomClicked" />
-        <Button Margin="30,5,30,5" Text="Color Picker" Clicked="OnColorPickerClicked" />
-        <Button Margin="30,5,30,5" Text="Wizard Control" Clicked="OnWizardPageClicked" />
-        <Button Margin="30,5,30,5" Text="Segmented Control" Clicked="OnSegmentedControlPageClicked" />
-        <Button Margin="30,5,30,5" Text="Heatmap" Clicked="OnHeatmapPageClicked" />
-        <Button Margin="30,5,30,5" Text="Signature Pad" Clicked="OnSignaturePadPageClicked" />
-        <Button Margin="30,5,30,5" Text="Tab View" Clicked="OnTabViewPageClicked" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout>
+            <Button Margin="30,5,30,5" Text="Charts" Clicked="OnChartsButtonClicked" />
+            <Button Margin="30,5,30,5" Text="Controls" Clicked="OnControlsClicked" />
+            <Button Margin="30,5,30,5" Text="PinchPan" Clicked="OnPanZoomClicked" />
+            <Button Margin="30,5,30,5" Text="Color Picker" Clicked="OnColorPickerClicked" />
+            <Button Margin="30,5,30,5" Text="Wizard Control" Clicked="OnWizardPageClicked" />
+            <Button Margin="30,5,30,5" Text="Segmented Control" Clicked="OnSegmentedControlPageClicked" />
+            <Button Margin="30,5,30,5" Text="Heatmap" Clicked="OnHeatmapPageClicked" />
+            <Button Margin="30,5,30,5" Text="Signature Pad" Clicked="OnSignaturePadPageClicked" />
+            <Button Margin="30,5,30,5" Text="Tab View" Clicked="OnTabViewPageClicked" />
+            <Button Margin="30,5,30,5" Text="Data Grid" Clicked="OnDataGridPageClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
     
 </ContentPage>

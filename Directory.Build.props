@@ -3,22 +3,28 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<PackageProjectUrl>https://github.com/newky2k/DSoft.Maui.Controls</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/newky2k/DSoft.Maui.Controls</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>Latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<NoWarn>1701;1702;CS8002;CS8653;CS8600;CS1591;CS8603;CS8602;CS8765;CS8618;CS8604;</NoWarn>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+
+		<RepositoryType>git</RepositoryType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Copyright>Copyright © 2026 DSoft</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Authors>newky2k</Authors>
 		<Company>newky2k</Company>
-		<Copyright>newky2k</Copyright>
+		<PackageIcon>DSIcon.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/newky2k/DSoft.Maui.Controls</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/newky2k/DSoft.Maui.Controls</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\DSIcon.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
