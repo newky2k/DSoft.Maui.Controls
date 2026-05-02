@@ -35,6 +35,8 @@ Features:
     - Tab container using `SegmentedControl` as the tab bar; supports top/bottom tab position, two-way `SelectedIndex` binding, external styling via `SegmentedControlStyle`, and hiding the tab bar via `IsTabBarVisible`
 - `DataGridView`
     - `System.Data.DataTable`-backed data grid with column headers, alternating row colours, row selection, column sorting, and optional horizontal scrolling
+- `SpinnerPickerView`
+    - Drum-roll / wheel-style picker — scroll vertically to select a value; surrounding items fade and scale to create the iOS spinner feel
 
 This packages also contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
@@ -976,3 +978,119 @@ Selection state is tracked through a lightweight `DataRowViewModel` wrapper (one
 Sorting is applied to `DataTable.DefaultView.Sort` and `BuildRows` is called to refresh the `CollectionView` items source in the new order.
 
 When `HorizontalScrollEnabled` is `true`, the inner `_rootGrid` is placed inside a `ScrollView` with `Orientation = Horizontal` and given a `WidthRequest` equal to the sum of all column widths. Star columns are converted to Absolute widths using `DefaultColumnWidth` so the total content width is well-defined in the unconstrained horizontal measurement pass.
+
+---
+
+# SpinnerPickerView
+
+`SpinnerPickerView` is a drum-roll / wheel-style picker built entirely from MAUI primitives. Scroll vertically to spin through a list; the centred item snaps into the selection zone with a spring animation. Items above and below fade in opacity and scale down to give the classic iOS picker feel — with no native elements involved.
+
+## Basic Usage
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:SpinnerPickerView
+    x:Name="MonthPicker"
+    VisibleItemCount="5"
+    ItemHeight="44"
+    TextColor="Gray"
+    SelectedTextColor="Black"
+    SelectorColor="LightGray"
+    SelectionChanged="OnMonthChanged" />
+```
+
+```csharp
+MonthPicker.ItemsSource = new[]
+{
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+MonthPicker.SelectedIndex = DateTime.Today.Month - 1;
+```
+
+## Date-Picker Style (three spinners side by side)
+
+Place multiple `SpinnerPickerView` controls in a `Grid` to build a compound picker:
+
+```xaml
+<Border Stroke="LightGray" StrokeThickness="1" Padding="0">
+    <Border.StrokeShape>
+        <RoundRectangle CornerRadius="12" />
+    </Border.StrokeShape>
+    <Grid ColumnDefinitions="*,*,*" Padding="8,0">
+        <controls:SpinnerPickerView x:Name="MonthPicker" Grid.Column="0"
+            VisibleItemCount="5" ItemHeight="44"
+            TextColor="Gray" SelectedTextColor="Black" SelectorColor="LightGray"
+            SelectionChanged="OnDateChanged" />
+        <controls:SpinnerPickerView x:Name="DayPicker" Grid.Column="1"
+            VisibleItemCount="5" ItemHeight="44"
+            TextColor="Gray" SelectedTextColor="Black" SelectorColor="LightGray"
+            SelectionChanged="OnDateChanged" />
+        <controls:SpinnerPickerView x:Name="YearPicker" Grid.Column="2"
+            VisibleItemCount="5" ItemHeight="44"
+            TextColor="Gray" SelectedTextColor="Black" SelectorColor="LightGray"
+            SelectionChanged="OnDateChanged" />
+    </Grid>
+</Border>
+```
+
+## MVVM / Data Binding
+
+`SelectedIndex` and `SelectedItem` are both two-way bindable and stay in sync automatically:
+
+```xaml
+<controls:SpinnerPickerView
+    ItemsSource="{Binding Countries}"
+    SelectedIndex="{Binding SelectedCountryIndex}"
+    SelectionChanged="OnCountryChanged" />
+```
+
+```csharp
+private void OnCountryChanged(object sender, SpinnerSelectedEventArgs e)
+{
+    Console.WriteLine($"Selected: {e.SelectedItem} (index {e.SelectedIndex})");
+    Console.WriteLine($"Previously: {e.PreviousItem} (index {e.PreviousIndex})");
+}
+```
+
+## Bindable Properties Reference
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `ItemsSource` | `IList` | `null` | Any list — `string[]`, `List<T>`, `ObservableCollection<T>`, etc. Items are displayed using `ToString()`. |
+| `SelectedIndex` | `int` | `0` | Zero-based index of the selected item. Two-way bindable. |
+| `SelectedItem` | `object?` | `null` | The selected item. Two-way bindable. Stays in sync with `SelectedIndex` automatically. |
+| `ItemHeight` | `double` | `44` | Height of each row in device-independent units. |
+| `VisibleItemCount` | `int` | `5` | Number of rows shown at once. Use an odd number so there is a clear centre item (e.g. `3`, `5`, `7`). |
+| `TextColor` | `Color` | `Gray` | Text colour for non-selected items. |
+| `SelectedTextColor` | `Color` | `Black` | Text colour for the centred (selected) item. |
+| `FontSize` | `double` | `16` | Font size applied to all item labels. |
+| `SelectorColor` | `Color` | `LightGray` | Colour of the two 1 px lines that frame the selection zone. |
+
+## Events
+
+### `SelectionChanged`
+
+Raised after the picker snaps to a new item.
+
+```csharp
+public event EventHandler<SpinnerSelectedEventArgs>? SelectionChanged;
+```
+
+`SpinnerSelectedEventArgs` exposes:
+
+| Property | Type | Description |
+|---|---|---|
+| `SelectedIndex` | `int` | Index of the newly selected item. |
+| `SelectedItem` | `object?` | The item at `SelectedIndex`. |
+| `PreviousIndex` | `int` | Index of the previously selected item. |
+| `PreviousItem` | `object?` | The previously selected item. |
+
+## How It Works
+
+The control is a `ContentView` wrapping a three-row `Grid`. The centre row is exactly `ItemHeight` tall and marks the selection zone; two 1 px `BoxView` lines sit at its top and bottom edges. A `VerticalStackLayout` of `Label` views spans all three rows and is translated vertically as the user drags with `PanGestureRecognizer`.
+
+On each frame during a drag, every label's `Opacity` and `Scale` are updated based on its distance from the control's vertical centre — items further away become smaller and more transparent. When the user lifts their finger, the nearest item is calculated and the layout snaps to it with a `SpringOut`-eased animation (300 ms).
+
+`SelectedIndex` and `SelectedItem` are kept in sync via a `_suppressCallbacks` guard. `ObservableCollection` sources are supported — the control subscribes to `INotifyCollectionChanged` and rebuilds when the source changes.
