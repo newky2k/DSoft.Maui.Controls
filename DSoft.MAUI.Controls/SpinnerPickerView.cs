@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Specialized;
+using System.Reflection;
 using DSoft.Maui.Controls.Events;
 
 namespace DSoft.Maui.Controls;
@@ -17,7 +18,10 @@ public class SpinnerPickerView : ContentView
     private readonly RowDefinition _centerRowDef;
     private readonly BoxView _topLine;
     private readonly BoxView _bottomLine;
-    private readonly List<Label> _labels = new();
+    private readonly List<View> _itemViews = new();
+    private int _originalCount;
+    private int _loopCopies;
+    private int _loopOffset;
     private double _startTranslation;
     private bool _suppressCallbacks;
 
@@ -152,6 +156,63 @@ public class SpinnerPickerView : ContentView
 
     #endregion
 
+    #region IsLooping
+
+    public static readonly BindableProperty IsLoopingProperty = BindableProperty.Create(
+        nameof(IsLooping), typeof(bool), typeof(SpinnerPickerView),
+        false, propertyChanged: OnBuildRequired);
+
+    /// <summary>
+    /// When true the list wraps — the user can scroll past the last item and arrive
+    /// at the first, and vice versa.
+    /// </summary>
+    public bool IsLooping
+    {
+        get => (bool)GetValue(IsLoopingProperty);
+        set => SetValue(IsLoopingProperty, value);
+    }
+
+    #endregion
+
+    #region DisplayMemberPath
+
+    public static readonly BindableProperty DisplayMemberPathProperty = BindableProperty.Create(
+        nameof(DisplayMemberPath), typeof(string), typeof(SpinnerPickerView),
+        null, propertyChanged: OnBuildRequired);
+
+    /// <summary>
+    /// Name of the property on each item to use as the display text.
+    /// When null, <c>ToString()</c> is called on each item.
+    /// Has no effect when <see cref="ItemTemplate"/> is set.
+    /// </summary>
+    public string? DisplayMemberPath
+    {
+        get => (string?)GetValue(DisplayMemberPathProperty);
+        set => SetValue(DisplayMemberPathProperty, value);
+    }
+
+    #endregion
+
+    #region ItemTemplate
+
+    public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(
+        nameof(ItemTemplate), typeof(DataTemplate), typeof(SpinnerPickerView),
+        null, propertyChanged: OnBuildRequired);
+
+    /// <summary>
+    /// Optional <see cref="DataTemplate"/> used to create each row.
+    /// The <c>BindingContext</c> of the root view is set to the item.
+    /// Opacity and Scale transforms are still applied by the picker;
+    /// text colour / font styling is left to the template.
+    /// </summary>
+    public DataTemplate? ItemTemplate
+    {
+        get => (DataTemplate?)GetValue(ItemTemplateProperty);
+        set => SetValue(ItemTemplateProperty, value);
+    }
+
+    #endregion
+
     #region Events
 
     public event EventHandler<SpinnerSelectedEventArgs>? SelectionChanged;
@@ -242,42 +303,57 @@ public class SpinnerPickerView : ContentView
 
     private double ClampTranslation(double y)
     {
-        if (_labels.Count == 0) return y;
-        return Math.Clamp(y, CenterOffsetForIndex(_labels.Count - 1), CenterOffsetForIndex(0));
+        if (_itemViews.Count == 0) return y;
+        // Looping: no hard clamp — the repeated copies act as the buffer.
+        if (IsLooping) return y;
+        return Math.Clamp(y, CenterOffsetForIndex(_itemViews.Count - 1), CenterOffsetForIndex(0));
     }
 
-    // TranslationY value that places item[index] in the vertical centre of the control.
+    // TranslationY that places item[index] in the vertical centre of the control.
     // Derivation: item centre = (index + 0.5) * ItemHeight + TranslationY == ControlHeight / 2
     private double CenterOffsetForIndex(int index)
         => ItemHeight * ((VisibleItemCount - 1) / 2.0 - index);
 
     private async void SnapToNearestItem()
     {
-        if (_labels.Count == 0) return;
+        if (_itemViews.Count == 0) return;
 
         var rawIndex = (VisibleItemCount - 1) / 2.0 - _itemsLayout.TranslationY / ItemHeight;
-        var index = Math.Clamp((int)Math.Round(rawIndex), 0, _labels.Count - 1);
+        var internalIndex = Math.Clamp((int)Math.Round(rawIndex), 0, _itemViews.Count - 1);
 
-        await AnimateToIndex(index);
+        // Resolve the actual source index, accounting for looping copies.
+        var actualIndex = IsLooping && _originalCount > 0
+            ? ((internalIndex % _originalCount) + _originalCount) % _originalCount
+            : internalIndex;
 
-        if (index == SelectedIndex && Equals(ItemsSource?[index], SelectedItem))
+        await AnimateToIndex(internalIndex);
+
+        // After the snap animation, silently reposition to the middle copy so the
+        // user always has room to scroll in either direction.
+        if (IsLooping && _originalCount > 0)
+        {
+            _itemsLayout.TranslationY = CenterOffsetForIndex(_loopOffset + actualIndex);
+            RefreshItemTransforms();
+        }
+
+        if (actualIndex == SelectedIndex && Equals(ItemsSource?[actualIndex], SelectedItem))
             return;
 
         var previousIndex = SelectedIndex;
         var previousItem = SelectedItem;
 
         _suppressCallbacks = true;
-        SelectedIndex = index;
-        SelectedItem = ItemsSource?[index];
+        SelectedIndex = actualIndex;
+        SelectedItem = ItemsSource?[actualIndex];
         _suppressCallbacks = false;
 
-        SelectionChanged?.Invoke(this, new SpinnerSelectedEventArgs(index, SelectedItem, previousIndex, previousItem));
+        SelectionChanged?.Invoke(this, new SpinnerSelectedEventArgs(actualIndex, SelectedItem, previousIndex, previousItem));
     }
 
-    private Task AnimateToIndex(int index)
+    private Task AnimateToIndex(int internalIndex)
     {
         var startY = _itemsLayout.TranslationY;
-        var targetY = CenterOffsetForIndex(index);
+        var targetY = CenterOffsetForIndex(internalIndex);
 
         this.AbortAnimation("Snap");
 
@@ -303,56 +379,96 @@ public class SpinnerPickerView : ContentView
 
     private void RefreshItemTransforms()
     {
-        if (_labels.Count == 0) return;
+        if (_itemViews.Count == 0) return;
 
         var controlCenterY = ItemHeight * VisibleItemCount / 2.0;
 
-        for (var i = 0; i < _labels.Count; i++)
+        for (var i = 0; i < _itemViews.Count; i++)
         {
-            var label = _labels[i];
+            var view = _itemViews[i];
             var itemCenterY = (i + 0.5) * ItemHeight + _itemsLayout.TranslationY;
             var distance = Math.Abs(itemCenterY - controlCenterY) / ItemHeight;
 
-            label.Opacity = Math.Max(0.2, 1.0 - distance * 0.5);
-            label.Scale = Math.Max(0.7, 1.0 - distance * 0.15);
+            view.Opacity = Math.Max(0.2, 1.0 - distance * 0.5);
+            view.Scale = Math.Max(0.7, 1.0 - distance * 0.15);
 
-            if (distance < 0.5)
+            // Only apply text styling to default Label rows; custom templates own their own styling.
+            if (view is Label label)
             {
-                label.TextColor = SelectedTextColor;
-                label.FontAttributes = FontAttributes.Bold;
-            }
-            else
-            {
-                label.TextColor = TextColor;
-                label.FontAttributes = FontAttributes.None;
+                if (distance < 0.5)
+                {
+                    label.TextColor = SelectedTextColor;
+                    label.FontAttributes = FontAttributes.Bold;
+                }
+                else
+                {
+                    label.TextColor = TextColor;
+                    label.FontAttributes = FontAttributes.None;
+                }
             }
         }
     }
 
+    private string GetDisplayText(object? item)
+    {
+        if (item == null) return string.Empty;
+        if (DisplayMemberPath == null) return item.ToString() ?? string.Empty;
+
+        var prop = item.GetType().GetProperty(DisplayMemberPath, BindingFlags.Public | BindingFlags.Instance);
+        return prop?.GetValue(item)?.ToString() ?? item.ToString() ?? string.Empty;
+    }
+
+    private View CreateItemView(object? item)
+    {
+        if (ItemTemplate != null)
+        {
+            var view = (View)ItemTemplate.CreateContent();
+            view.BindingContext = item;
+            view.HeightRequest = ItemHeight;
+            return view;
+        }
+
+        return new Label
+        {
+            Text = GetDisplayText(item),
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center,
+            HeightRequest = ItemHeight,
+            FontSize = FontSize,
+            TextColor = TextColor,
+        };
+    }
+
     private void BuildItems()
     {
-        _labels.Clear();
+        _itemViews.Clear();
         _itemsLayout.Children.Clear();
 
         if (ItemsSource == null) return;
 
-        foreach (var item in ItemsSource)
+        _originalCount = ItemsSource.Count;
+        if (_originalCount == 0) return;
+
+        // Number of copies: enough to have ~50 source items on each side when looping.
+        // Always odd so the middle copy index is exact. Minimum 3.
+        _loopCopies = IsLooping
+            ? Math.Max(3, (100 / _originalCount + 1) | 1)
+            : 1;
+        _loopOffset = _originalCount * (_loopCopies / 2);
+
+        for (var copy = 0; copy < _loopCopies; copy++)
         {
-            var label = new Label
+            foreach (var item in ItemsSource)
             {
-                Text = item?.ToString() ?? string.Empty,
-                HorizontalTextAlignment = TextAlignment.Center,
-                VerticalTextAlignment = TextAlignment.Center,
-                HeightRequest = ItemHeight,
-                FontSize = FontSize,
-                TextColor = TextColor,
-            };
-            _labels.Add(label);
-            _itemsLayout.Children.Add(label);
+                var view = CreateItemView(item);
+                _itemViews.Add(view);
+                _itemsLayout.Children.Add(view);
+            }
         }
 
-        var safeIndex = Math.Clamp(SelectedIndex, 0, Math.Max(0, _labels.Count - 1));
-        _itemsLayout.TranslationY = CenterOffsetForIndex(safeIndex);
+        var safeIndex = Math.Clamp(SelectedIndex, 0, _originalCount - 1);
+        var startInternalIndex = _loopOffset + safeIndex;
+        _itemsLayout.TranslationY = CenterOffsetForIndex(startInternalIndex);
         RefreshItemTransforms();
     }
 
@@ -375,15 +491,26 @@ public class SpinnerPickerView : ContentView
     private static void OnSelectedIndexChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var control = (SpinnerPickerView)bindable;
-        if (control._suppressCallbacks || control._labels.Count == 0) return;
+        if (control._suppressCallbacks || control._itemViews.Count == 0) return;
 
-        var index = Math.Clamp((int)newValue, 0, control._labels.Count - 1);
+        var index = Math.Clamp((int)newValue, 0, control._originalCount - 1);
 
         control._suppressCallbacks = true;
         control.SelectedItem = control.ItemsSource?[index];
         control._suppressCallbacks = false;
 
-        _ = control.AnimateToIndex(index);
+        // When looping, normalise to middle copy before animating so there's always room to scroll.
+        if (control.IsLooping && control._originalCount > 0)
+        {
+            var currentRaw = (control.VisibleItemCount - 1) / 2.0 - control._itemsLayout.TranslationY / control.ItemHeight;
+            var currentActual = ((int)Math.Round(currentRaw) % control._originalCount + control._originalCount) % control._originalCount;
+            control._itemsLayout.TranslationY = control.CenterOffsetForIndex(control._loopOffset + currentActual);
+            _ = control.AnimateToIndex(control._loopOffset + index);
+        }
+        else
+        {
+            _ = control.AnimateToIndex(index);
+        }
     }
 
     private static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
@@ -399,7 +526,8 @@ public class SpinnerPickerView : ContentView
             control.SelectedIndex = i;
             control._suppressCallbacks = false;
 
-            _ = control.AnimateToIndex(i);
+            var internalIndex = control.IsLooping ? control._loopOffset + i : i;
+            _ = control.AnimateToIndex(internalIndex);
             return;
         }
     }
@@ -422,6 +550,9 @@ public class SpinnerPickerView : ContentView
         control._topLine.Color = color;
         control._bottomLine.Color = color;
     }
+
+    private static void OnBuildRequired(BindableObject bindable, object oldValue, object newValue)
+        => ((SpinnerPickerView)bindable).BuildItems();
 
     #endregion
 }

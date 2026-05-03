@@ -1054,18 +1054,78 @@ private void OnCountryChanged(object sender, SpinnerSelectedEventArgs e)
 }
 ```
 
+## Looping
+
+Set `IsLooping="True"` to let the list wrap — scrolling past the last item arrives at the first, and vice versa. This is ideal for cyclical data such as months, hours, or minutes.
+
+```xaml
+<controls:SpinnerPickerView
+    IsLooping="True"
+    ItemsSource="{Binding Months}"
+    SelectedIndex="{Binding SelectedMonth}" />
+```
+
+The control internally creates enough repeated copies of the source list to give the user plenty of scroll room, then silently normalises the position back to the centre copy after each snap — making the loop invisible.
+
+## DisplayMemberPath
+
+When your `ItemsSource` contains complex objects, set `DisplayMemberPath` to the name of the property you want shown in each row. `ToString()` is used as the fallback when this is `null`.
+
+```csharp
+public class Country { public string Name { get; set; } public string Code { get; set; } }
+
+CountryPicker.ItemsSource = new[] { new Country { Name = "France", Code = "FR" }, ... };
+```
+
+```xaml
+<controls:SpinnerPickerView
+    ItemsSource="{Binding Countries}"
+    DisplayMemberPath="Name"
+    SelectedItem="{Binding SelectedCountry}" />
+```
+
+`SelectedItem` will be the `Country` object, not the display string.
+
+## ItemTemplate
+
+For fully custom rows, supply a `DataTemplate`. The `BindingContext` of each created view is set to the source item. Opacity and Scale transforms are still applied by the picker on each frame; all other styling is yours.
+
+```xaml
+<controls:SpinnerPickerView ItemsSource="{Binding ColorSwatches}" IsLooping="True">
+    <controls:SpinnerPickerView.ItemTemplate>
+        <DataTemplate>
+            <Grid HeightRequest="56" ColumnDefinitions="24,*" Padding="16,0" ColumnSpacing="12">
+                <BoxView Grid.Column="0"
+                         WidthRequest="20" HeightRequest="20" CornerRadius="10"
+                         VerticalOptions="Center"
+                         Color="{Binding Swatch}" />
+                <Label Grid.Column="1"
+                       Text="{Binding Name}"
+                       VerticalOptions="Center"
+                       FontSize="16" TextColor="Black" />
+            </Grid>
+        </DataTemplate>
+    </controls:SpinnerPickerView.ItemTemplate>
+</controls:SpinnerPickerView>
+```
+
+> **Note:** `DisplayMemberPath` has no effect when `ItemTemplate` is set. Text colour and font-attribute styling (`TextColor`, `SelectedTextColor`) are also skipped for templated rows — apply those inside your template instead.
+
 ## Bindable Properties Reference
 
 | Property | Type | Default | Description |
 |---|---|---|---|
-| `ItemsSource` | `IList` | `null` | Any list — `string[]`, `List<T>`, `ObservableCollection<T>`, etc. Items are displayed using `ToString()`. |
+| `ItemsSource` | `IList` | `null` | Any list — `string[]`, `List<T>`, `ObservableCollection<T>`, etc. |
 | `SelectedIndex` | `int` | `0` | Zero-based index of the selected item. Two-way bindable. |
 | `SelectedItem` | `object?` | `null` | The selected item. Two-way bindable. Stays in sync with `SelectedIndex` automatically. |
 | `ItemHeight` | `double` | `44` | Height of each row in device-independent units. |
 | `VisibleItemCount` | `int` | `5` | Number of rows shown at once. Use an odd number so there is a clear centre item (e.g. `3`, `5`, `7`). |
-| `TextColor` | `Color` | `Gray` | Text colour for non-selected items. |
-| `SelectedTextColor` | `Color` | `Black` | Text colour for the centred (selected) item. |
-| `FontSize` | `double` | `16` | Font size applied to all item labels. |
+| `IsLooping` | `bool` | `false` | When `true`, the list wraps so the user can scroll past the last item and arrive at the first. |
+| `DisplayMemberPath` | `string?` | `null` | Property name to display on each row. Falls back to `ToString()` when `null`. Has no effect when `ItemTemplate` is set. |
+| `ItemTemplate` | `DataTemplate?` | `null` | Custom template for each row. `BindingContext` is set to the source item. |
+| `TextColor` | `Color` | `Gray` | Text colour for non-selected rows (default Label rows only). |
+| `SelectedTextColor` | `Color` | `Black` | Text colour for the centred row (default Label rows only). |
+| `FontSize` | `double` | `16` | Font size for default Label rows. |
 | `SelectorColor` | `Color` | `LightGray` | Colour of the two 1 px lines that frame the selection zone. |
 
 ## Events
@@ -1089,8 +1149,10 @@ public event EventHandler<SpinnerSelectedEventArgs>? SelectionChanged;
 
 ## How It Works
 
-The control is a `ContentView` wrapping a three-row `Grid`. The centre row is exactly `ItemHeight` tall and marks the selection zone; two 1 px `BoxView` lines sit at its top and bottom edges. A `VerticalStackLayout` of `Label` views spans all three rows and is translated vertically as the user drags with `PanGestureRecognizer`.
+The control is a `ContentView` wrapping a three-row `Grid`. The centre row is exactly `ItemHeight` tall and marks the selection zone; two 1 px `BoxView` lines sit at its top and bottom edges. A `VerticalStackLayout` of item views spans all three rows and is translated vertically as the user drags with `PanGestureRecognizer`.
 
-On each frame during a drag, every label's `Opacity` and `Scale` are updated based on its distance from the control's vertical centre — items further away become smaller and more transparent. When the user lifts their finger, the nearest item is calculated and the layout snaps to it with a `SpringOut`-eased animation (300 ms).
+On each frame during a drag, every item view's `Opacity` and `Scale` are updated based on its distance from the control's vertical centre. When the user lifts their finger, the nearest item is calculated and the layout snaps to it with a `SpringOut`-eased animation (300 ms).
+
+When `IsLooping` is `true`, the source items are repeated enough times to give the user ~50 source items of scroll room on each side. After every snap the layout is silently repositioned to the middle copy so the same scroll room is always available — making the wrap invisible. When `ItemTemplate` is set, each row is created via `DataTemplate.CreateContent()` with the item as `BindingContext`; otherwise a `Label` is created, using `DisplayMemberPath` (via reflection) or `ToString()` for its text.
 
 `SelectedIndex` and `SelectedItem` are kept in sync via a `_suppressCallbacks` guard. `ObservableCollection` sources are supported — the control subscribes to `INotifyCollectionChanged` and rebuilds when the source changes.
