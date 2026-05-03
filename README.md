@@ -37,6 +37,8 @@ Features:
     - `System.Data.DataTable`-backed data grid with column headers, alternating row colours, row selection, column sorting, and optional horizontal scrolling
 - `SpinnerPickerView`
     - Drum-roll / wheel-style picker — scroll vertically to select a value; surrounding items fade and scale to create the iOS spinner feel
+- `DatePickerView`
+    - iOS-style calendar date/time picker with month navigation, year selection, today highlight, min/max date enforcement, optional range selection, and a `SpinnerPickerView`-based time picker
 
 This packages also contains `PanPinchContainer` based on `PanPinchContainer` by [CodingOctocat](https://github.com/CodingOctocat/MauiPanPinchContainer)
 
@@ -1156,3 +1158,173 @@ On each frame during a drag, every item view's `Opacity` and `Scale` are updated
 When `IsLooping` is `true`, the source items are repeated enough times to give the user ~50 source items of scroll room on each side. After every snap the layout is silently repositioned to the middle copy so the same scroll room is always available — making the wrap invisible. When `ItemTemplate` is set, each row is created via `DataTemplate.CreateContent()` with the item as `BindingContext`; otherwise a `Label` is created, using `DisplayMemberPath` (via reflection) or `ToString()` for its text.
 
 `SelectedIndex` and `SelectedItem` are kept in sync via a `_suppressCallbacks` guard. `ObservableCollection` sources are supported — the control subscribes to `INotifyCollectionChanged` and rebuilds when the source changes.
+
+---
+
+# DatePickerView
+
+`DatePickerView` is an iOS-style calendar date/time picker built entirely from MAUI primitives. It supports three display modes (date only, time only, or both), month/year navigation, today highlight, minimum and maximum date constraints, optional date-range selection, and a `SpinnerPickerView`-based time picker for hours, minutes, and AM/PM.
+
+## Basic Usage
+
+```xaml
+xmlns:controls="http://dsoft.maui/schemas/controls"
+
+<controls:DatePickerView
+    x:Name="Picker"
+    DateSelected="OnDateSelected" />
+```
+
+```csharp
+private void OnDateSelected(object sender, DateSelectedEventArgs e)
+{
+    Console.WriteLine($"Selected: {e.SelectedDate:d MMMM yyyy}");
+    Console.WriteLine($"Previously: {e.PreviousDate:d MMMM yyyy}");
+}
+```
+
+## Picker Modes
+
+Set `Mode` to control which sections are visible.
+
+```xaml
+<!-- Calendar only (default) -->
+<controls:DatePickerView Mode="Date" />
+
+<!-- Time spinner only -->
+<controls:DatePickerView Mode="Time" />
+
+<!-- Calendar + time spinner -->
+<controls:DatePickerView Mode="DateTime" />
+```
+
+`DatePickerMode` is an enum in `DSoft.Maui.Controls.Core.Enums`.
+
+## Min / Max Dates
+
+```xaml
+<controls:DatePickerView
+    MinimumDate="2024-01-01"
+    MaximumDate="2026-12-31" />
+```
+
+Days outside the allowed range are greyed out and non-tappable. The prev/next navigation buttons are also disabled when they would move outside the range.
+
+## Range Selection
+
+Set `IsRangeSelectionEnabled="True"` to switch to range mode. The first tap sets the start date; the second tap completes the range. Dates within the range are highlighted with `RangeHighlightColor`.
+
+```xaml
+<controls:DatePickerView
+    IsRangeSelectionEnabled="True"
+    SelectedStartDate="{Binding RangeStart}"
+    SelectedEndDate="{Binding RangeEnd}"
+    DateRangeSelected="OnDateRangeSelected" />
+```
+
+```csharp
+private void OnDateRangeSelected(object sender, DateRangeSelectedEventArgs e)
+{
+    Console.WriteLine($"From {e.StartDate:d MMM} to {e.EndDate:d MMM yyyy}");
+}
+```
+
+## Year Picker
+
+Tapping the month/year label in the calendar header switches to a year grid (4 columns, 20 years per page). Tap a year to jump straight to it; use the prev/next arrows to page through decades. Tap the label again to return to the calendar.
+
+## Time Picker
+
+When `Mode` is `Time` or `DateTime`, a row of `SpinnerPickerView` controls appears for hours, minutes, and AM/PM. Set `Use24HourFormat="True"` to switch to a 24-hour layout (the AM/PM spinner is hidden automatically).
+
+```xaml
+<controls:DatePickerView
+    Mode="DateTime"
+    Use24HourFormat="True"
+    TimeChanged="OnTimeChanged" />
+```
+
+```csharp
+private void OnTimeChanged(object sender, DateSelectedEventArgs e)
+{
+    Console.WriteLine($"Time: {e.SelectedDate:HH:mm}");
+}
+```
+
+## Styling
+
+All colour properties are bindable and update live.
+
+```xaml
+<controls:DatePickerView
+    TodayHighlightColor="#007AFF"
+    SelectionColor="#007AFF"
+    RangeHighlightColor="#CCE4FF"
+    DayColor="Black"
+    DayNameColor="Gray"
+    DisabledDayColor="LightGray"
+    OtherMonthDayColor="LightGray"
+    SpinnerTextColor="Gray"
+    SpinnerSelectedTextColor="Black"
+    SpinnerSelectorColor="LightGray" />
+```
+
+Wrap the control in a `Border` for a card appearance:
+
+```xaml
+<Border Stroke="LightGray" StrokeThickness="1" BackgroundColor="White" Padding="0">
+    <Border.StrokeShape>
+        <RoundRectangle CornerRadius="14" />
+    </Border.StrokeShape>
+    <controls:DatePickerView DateSelected="OnDateSelected" />
+</Border>
+```
+
+## Bindable Properties Reference
+
+### Data
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `Mode` | `DatePickerMode` | `Date` | Controls which sections are shown: `Date`, `Time`, or `DateTime`. |
+| `SelectedDate` | `DateTime` | `DateTime.Today` | The currently selected date (and time). Two-way bindable. |
+| `MinimumDate` | `DateTime?` | `null` | Earliest selectable date. Days before this are disabled. |
+| `MaximumDate` | `DateTime?` | `null` | Latest selectable date. Days after this are disabled. |
+| `IsRangeSelectionEnabled` | `bool` | `false` | When `true`, enables two-tap range selection. |
+| `SelectedStartDate` | `DateTime?` | `null` | Start of the selected range. Two-way bindable. |
+| `SelectedEndDate` | `DateTime?` | `null` | End of the selected range. Two-way bindable. |
+| `Use24HourFormat` | `bool` | `false` | When `true`, the time picker shows 0–23 hours and hides the AM/PM spinner. |
+
+### Colours
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `TodayHighlightColor` | `Color` | `#007AFF` | Stroke colour of the ring drawn around today's date. |
+| `SelectionColor` | `Color` | `#007AFF` | Fill colour for the selected date circle (and range endpoints). Also used for navigation button text. |
+| `RangeHighlightColor` | `Color` | `#CCE4FF` | Background colour for dates between the range start and end. |
+| `HeaderBackgroundColor` | `Color` | `Transparent` | Background of the month/year navigation header row. |
+| `DayNameColor` | `Color` | `Gray` | Text colour for the day-of-week abbreviation row (Sun–Sat). |
+| `DayColor` | `Color` | `Black` | Text colour for normal day numbers. |
+| `DisabledDayColor` | `Color` | `LightGray` | Text colour for days outside `MinimumDate`/`MaximumDate`. |
+| `OtherMonthDayColor` | `Color` | `LightGray` | Text colour for overflow days from adjacent months. |
+| `SpinnerTextColor` | `Color` | `Gray` | Text colour for non-selected time spinner rows. |
+| `SpinnerSelectedTextColor` | `Color` | `Black` | Text colour for the centred (selected) time spinner row. |
+| `SpinnerSelectorColor` | `Color` | `LightGray` | Colour of the selection-zone lines on the time spinners. |
+
+## Events
+
+| Event | Args type | Description |
+|---|---|---|
+| `DateSelected` | `DateSelectedEventArgs` | Raised when the user taps a day in single-selection mode. `e.SelectedDate` is the new date; `e.PreviousDate` is the previous value. |
+| `DateRangeSelected` | `DateRangeSelectedEventArgs` | Raised when a range is completed (second tap). `e.StartDate` and `e.EndDate` are the range boundaries. |
+| `TimeChanged` | `DateSelectedEventArgs` | Raised when the user scrolls any time spinner to a new value. `e.SelectedDate` carries the updated time on the current date. |
+
+## How It Works
+
+`DatePickerView` is a `ContentView` whose content is a `VerticalStackLayout` of two sections — the calendar section and the time section — each shown or hidden based on `Mode`.
+
+The calendar section is a three-row `Grid`: a header row with prev/next buttons and a tappable month/year label, a fixed day-names row, and a container that holds both the day-cell grid and the year-picker grid (only one is visible at a time). The day-cell grid is a 7-column `Grid` rebuilt on each navigation or selection change; each cell is a `Grid` containing a `Border` (for selected/today states) or a plain `Label` (for all other states). Today is indicated by a 2 px stroke `Ellipse` border; selected dates and range endpoints use a filled `Ellipse`. Dates between the range start and end use `RangeHighlightColor` as their container background to produce a continuous band.
+
+The year-picker grid replaces the day-cell grid when the header label is tapped. It shows 20 years in a 4-column layout with its own prev/next paging. Tapping a year updates `_displayedMonth`, hides the year grid, and rebuilds the calendar.
+
+The time section is a four-column `Grid` of `SpinnerPickerView` controls (hours, a colon label, minutes, AM/PM). When `Use24HourFormat` changes, the hours list is rebuilt (0–23) and the AM/PM spinner is hidden. `_suppressTimeCallbacks` prevents re-entrancy when `SelectedDate` is set externally and the spinners are repositioned programmatically.
