@@ -1327,7 +1327,9 @@ All colour properties are bindable and update live.
     OtherMonthDayColor="LightGray"
     SpinnerTextColor="Gray"
     SpinnerSelectedTextColor="Black"
-    SpinnerSelectorColor="LightGray" />
+    SpinnerSelectorColor="LightGray"
+    SpinnerBackgroundColor="White"
+    SpinnerBorderColor="LightGray" />
 ```
 
 Wrap the control in a `Border` for a card appearance:
@@ -1372,6 +1374,8 @@ Wrap the control in a `Border` for a card appearance:
 | `SpinnerTextColor` | `Color` | `Gray` | Text colour for non-selected time spinner rows. |
 | `SpinnerSelectedTextColor` | `Color` | `Black` | Text colour for the centred (selected) time spinner row. |
 | `SpinnerSelectorColor` | `Color` | `LightGray` | Colour of the selection-zone lines on the time spinners. |
+| `SpinnerBackgroundColor` | `Color` | `White` | Background colour of the month/year spinner card. Bind to a theme resource (e.g. `AppThemeBinding`) for dark mode. |
+| `SpinnerBorderColor` | `Color` | `LightGray` | Border colour of the month/year spinner card. |
 
 ## Events
 

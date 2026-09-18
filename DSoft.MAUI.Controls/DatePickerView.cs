@@ -307,6 +307,26 @@ public class DatePickerView : ContentView
         set => SetValue(SpinnerSelectorColorProperty, value);
     }
 
+    public static readonly BindableProperty SpinnerBackgroundColorProperty = BindableProperty.Create(
+        nameof(SpinnerBackgroundColor), typeof(Color), typeof(DatePickerView),
+        Colors.White, propertyChanged: OnMonthYearCardStyleChanged);
+
+    public Color SpinnerBackgroundColor
+    {
+        get => (Color)GetValue(SpinnerBackgroundColorProperty);
+        set => SetValue(SpinnerBackgroundColorProperty, value);
+    }
+
+    public static readonly BindableProperty SpinnerBorderColorProperty = BindableProperty.Create(
+        nameof(SpinnerBorderColor), typeof(Color), typeof(DatePickerView),
+        Colors.LightGray, propertyChanged: OnMonthYearCardStyleChanged);
+
+    public Color SpinnerBorderColor
+    {
+        get => (Color)GetValue(SpinnerBorderColorProperty);
+        set => SetValue(SpinnerBorderColorProperty, value);
+    }
+
     #endregion
 
     #region Events
@@ -404,8 +424,8 @@ public class DatePickerView : ContentView
         _monthYearPickerCard = new Border
         {
             Content = _monthYearPickerGrid,
-            BackgroundColor = Colors.White,
-            Stroke = Colors.LightGray,
+            BackgroundColor = SpinnerBackgroundColor,
+            Stroke = SpinnerBorderColor,
             StrokeThickness = 1,
             StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },
             Shadow = new Shadow { Brush = Colors.Black, Opacity = 0.25f, Radius = 16, Offset = new Point(0, 6) },
@@ -1228,6 +1248,15 @@ public class DatePickerView : ContentView
 
     private static void OnShowTodayButtonChanged(BindableObject bindable, object oldValue, object newValue)
         => ((DatePickerView)bindable).LayoutCalendarHeader();
+
+    private static void OnMonthYearCardStyleChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (DatePickerView)bindable;
+        if (control._monthYearPickerCard == null) return;
+
+        control._monthYearPickerCard.BackgroundColor = control.SpinnerBackgroundColor;
+        control._monthYearPickerCard.Stroke = control.SpinnerBorderColor;
+    }
 
     private static void OnTimeStyleChanged(BindableObject bindable, object oldValue, object newValue)
     {
