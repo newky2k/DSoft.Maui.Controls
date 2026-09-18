@@ -5,6 +5,7 @@
              x:Class="MauiSampleApp.DatePickerPage"
              Title="Date Picker">
     <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="ThemeToolbarItem" Clicked="OnThemeClicked" />
         <ToolbarItem Text="Close" Clicked="OnCloseClicked" />
     </ContentPage.ToolbarItems>
 
@@ -18,6 +19,11 @@
 
             <mauic:SegmentedControl x:Name="ModeSegment"
                                     SelectedIndex="0"
+                                    TrackColor="{AppThemeBinding Light=#E5E5EA, Dark=#2C2C2E}"
+                                    ThumbColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray500}}"
+                                    SelectedTextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                    UnselectedTextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
+                                    BorderColor="{AppThemeBinding Light=#C6C6C8, Dark={StaticResource Gray600}}"
                                     SegmentSelected="OnModeChanged">
                 <mauic:SegmentedControl.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
@@ -29,11 +35,22 @@
             </mauic:SegmentedControl>
 
             <!-- Picker -->
-            <Border Stroke="LightGray" StrokeThickness="1" BackgroundColor="White" Padding="0">
+            <Border Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}" Padding="0">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="14" />
                 </Border.StrokeShape>
+                <!-- Every colour follows the app theme so the control can be checked in light and dark mode. -->
                 <mauic:DatePickerView x:Name="Picker"
+                                      DayColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                      DayNameColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
+                                      DisabledDayColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                      OtherMonthDayColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                      RangeHighlightColor="{AppThemeBinding Light=#CCE4FF, Dark=#1F3A5C}"
+                                      SpinnerTextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                      SpinnerSelectedTextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                      SpinnerSelectorColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                      SpinnerBackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                                      SpinnerBorderColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
                                       DateSelected="OnDateSelected"
                                       DateRangeSelected="OnDateRangeSelected"
                                       TimeChanged="OnTimeChanged" />
@@ -44,7 +61,7 @@
                    FontSize="12" FontAttributes="Bold"
                    TextColor="#8E8E93" Margin="4,0,0,0" />
 
-            <Border Stroke="LightGray" StrokeThickness="1" BackgroundColor="White" Padding="12,0">
+            <Border Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}" Padding="12,0">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10" />
                 </Border.StrokeShape>
@@ -54,13 +71,13 @@
                         <Switch x:Name="RangeSwitch" Grid.Column="1"
                                 Toggled="OnRangeToggled" />
                     </Grid>
-                    <BoxView HeightRequest="1" Color="LightGray" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
                     <Grid ColumnDefinitions="*,Auto" HeightRequest="48">
                         <Label Text="24-Hour Format" VerticalOptions="Center" FontSize="15" />
                         <Switch x:Name="HourFormatSwitch" Grid.Column="1"
                                 Toggled="OnHourFormatToggled" />
                     </Grid>
-                    <BoxView HeightRequest="1" Color="LightGray" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
                     <Grid ColumnDefinitions="*,Auto" HeightRequest="48">
                         <Label Text="Show Today Button" VerticalOptions="Center" FontSize="15" />
                         <Switch x:Name="TodayButtonSwitch" Grid.Column="1"

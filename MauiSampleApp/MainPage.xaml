@@ -4,6 +4,9 @@
              xmlns:mauic="http://dsoft.maui/schemas/controls"             
              x:Class="MauiSampleApp.MainPage"
              Title="Demo">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="ThemeToolbarItem" Clicked="OnThemeClicked" />
+    </ContentPage.ToolbarItems>
 
     <ScrollView>
         <VerticalStackLayout>
