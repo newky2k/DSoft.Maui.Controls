@@ -9,6 +9,13 @@ public partial class DatePickerPage : ContentPage
     public DatePickerPage()
     {
         InitializeComponent();
+        ThemeToolbarItem.Text = ThemeService.Label;
+    }
+
+    private void OnThemeClicked(object sender, EventArgs e)
+    {
+        ThemeService.Cycle();
+        ThemeToolbarItem.Text = ThemeService.Label;
     }
 
     private async void OnCloseClicked(object sender, EventArgs e)
