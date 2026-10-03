@@ -17,7 +17,7 @@ DSoft.MAUI.Controls/       # Main library (the NuGet package)
 MauiSampleApp/             # Sample/demo application
 DSoft.MAUI.Controls.sln    # Solution file
 Directory.Build.props      # Shared MSBuild properties
-azure-pipelines-*.yml      # CI/CD pipelines (Azure DevOps)
+.github/workflows/         # CI/CD workflows (GitHub Actions)
 ```
 
 ### Library Layout
@@ -148,13 +148,6 @@ GitHub Actions (`.github/workflows/`):
 Version format used by the release workflow: `2.0.{yyMM}.{run number}` plus `RELEASE_SUFFIX` (empty for a stable version; set it to `-prerelease` in the workflow to publish a prerelease, which also marks the GitHub release as a prerelease).
 
 Both workflows use `windows-latest`, the .NET 10.x SDK and `dotnet workload restore` for the MAUI workloads.
-
-Azure Pipelines (kept alongside, superseded by the workflows above):
-
-| Pipeline | Trigger | Purpose |
-|----------|---------|---------|
-| `azure-pipelines-mergetest.yml` | Manual | Build verification before merging a PR |
-| `azure-pipelines-release.yml` | Push to `master` | Produces the NuGet packages as the `drop` artifact |
 
 ## Pull Requests
 

@@ -3,8 +3,6 @@
     <File Path="AGENTS.md" />
     <File Path=".github/workflows/ci.yml" />
     <File Path=".github/workflows/release.yml" />
-    <File Path="azure-pipelines-mergetest.yml" />
-    <File Path="azure-pipelines-release.yml" />
     <File Path="Directory.Build.props" />
     <File Path="LICENSE" />
     <File Path="README.md" />
