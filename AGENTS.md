@@ -138,18 +138,27 @@ public static MauiAppBuilder UseDSoftControls(this MauiAppBuilder builder)
 
 ## CI/CD
 
+GitHub Actions (`.github/workflows/`):
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | Pull requests to `main` or `development`, or manual | Builds Release. Publishes nothing. |
+| `release.yml` | Push to `main` (Markdown/workflow-only changes skipped), or manual | Builds Release, uploads the packages as the `drop` artifact, pushes them to nuget.org with Trusted Publishing (OIDC, `NUGET_USER` secret, `nuget` environment), then tags the commit `v<version>` and creates a GitHub release with the packages attached |
+
+Version format used by the release workflow: `2.0.{yyMM}.{run number}` plus `RELEASE_SUFFIX` (empty for a stable version; set it to `-prerelease` in the workflow to publish a prerelease, which also marks the GitHub release as a prerelease).
+
+Both workflows use `windows-latest`, the .NET 10.x SDK and `dotnet workload restore` for the MAUI workloads.
+
+Azure Pipelines (kept alongside, superseded by the workflows above):
+
 | Pipeline | Trigger | Purpose |
 |----------|---------|---------|
 | `azure-pipelines-mergetest.yml` | Manual | Build verification before merging a PR |
-| `azure-pipelines-release.yml` | Push to `master` | Produces and publishes the NuGet artifact |
-
-Version format used by the release pipeline: `2.0.{YYMM}.{DD}{rev}`
-
-Both pipelines use `windows-latest` and .NET 10.x SDK with full MAUI workloads.
+| `azure-pipelines-release.yml` | Push to `master` | Produces the NuGet packages as the `drop` artifact |
 
 ## Pull Requests
 
-- Target the `development` branch for day-to-day work; `main`/`master` is the release branch.
-- Run the merge-test pipeline (or build locally in Release) before marking a PR ready for review.
+- Target the `development` branch for day-to-day work; `main` is the release branch.
+- Make sure the CI workflow passes (or build locally in Release) before marking a PR ready for review.
 - Include a demo page update in `MauiSampleApp` for any new or changed control.
 - Keep controls 100% MAUI — no Xamarin.Forms compatibility shims or platform renderers.
