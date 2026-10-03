@@ -51,7 +51,7 @@ jobs:
         run: dotnet workload restore DSoft.MAUI.Controls.slnx
 
       - name: Restore
-        run: dotnet restore DSoft.MAUI.Controls.slnx
+        run: dotnet restore DSoft.MAUI.Controls.slnx /p:Configuration=Release /p:Platform="Any CPU"
 
       - name: Build
         run: >
