@@ -143,7 +143,7 @@ GitHub Actions (`.github/workflows/`):
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | `ci.yml` | Pull requests to `main` or `development`, or manual | Builds Release. Publishes nothing. |
-| `release.yml` | Push to `main` (Markdown/workflow-only changes skipped), or manual | Builds Release, uploads the packages as the `drop` artifact, pushes them to nuget.org with Trusted Publishing (OIDC, `NUGET_USER` secret, `nuget` environment), then tags the commit `v<version>` and creates a GitHub release with the packages attached |
+| `release.yml` | Push to `main` (Markdown/workflow-only changes skipped), or manual | Builds Release, uploads the packages as the `drop` artifact, tags the commit `v<version>` (before publishing, so every published version has a tag), pushes the packages to nuget.org with Trusted Publishing (OIDC, `NUGET_USER` secret, `nuget` environment), then creates a GitHub release for the tag with the packages attached |
 
 Version format used by the release workflow: `2.0.{yyMM}.{run number}` plus `RELEASE_SUFFIX` (empty for a stable version; set it to `-prerelease` in the workflow to publish a prerelease, which also marks the GitHub release as a prerelease).
 

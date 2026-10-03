@@ -1,6 +1,7 @@
 # Release: on every push to main, builds Release and pushes the DSoft.*.nupkg
-# packages to nuget.org as 2.0.yyMM.<run number>, then tags the commit and
-# creates a GitHub release with the packages attached.
+# packages to nuget.org as 2.0.yyMM.<run number>. The commit is tagged
+# v<version> before anything is published, then a GitHub release is created
+# for that tag with the packages attached.
 # RELEASE_SUFFIX is empty for a stable version; set it to a suffix such as
 # '-prerelease' to publish a prerelease.
 # Signs in to nuget.org with Trusted Publishing (OIDC), so no API key is stored.
@@ -73,6 +74,24 @@ jobs:
           name: drop
           path: artifacts/*.nupkg
 
+      # Tag before publishing so every package on nuget.org has a matching tag.
+      # A re-run of the same run reuses its tag; a tag on another commit fails
+      # the job before anything is published.
+      - name: Tag
+        shell: bash
+        run: |
+          tag="v${{ steps.version.outputs.package }}"
+          existing=$(git ls-remote --tags origin "refs/tags/$tag" | cut -f1)
+          if [ -z "$existing" ]; then
+            git tag "$tag" "${{ github.sha }}"
+            git push origin "$tag"
+          elif [ "$existing" != "${{ github.sha }}" ]; then
+            echo "::error::Tag $tag already exists on $existing, not ${{ github.sha }}"
+            exit 1
+          else
+            echo "Tag $tag already exists on this commit"
+          fi
+
       - name: NuGet login
         id: nuget
         uses: NuGet/login@v1
@@ -92,7 +111,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "v${{ steps.version.outputs.package }}" artifacts/*.nupkg \
-            --target "${{ github.sha }}" \
+            --verify-tag \
             --title "${{ steps.version.outputs.package }}" \
             --generate-notes \
             ${RELEASE_SUFFIX:+--prerelease}
