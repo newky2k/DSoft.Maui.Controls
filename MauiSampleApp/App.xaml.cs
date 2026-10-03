@@ -5,6 +5,7 @@
         public App()
         {
             InitializeComponent();
+            ThemeService.ApplySaved();
 
             MainPage = new AppShell();
         }

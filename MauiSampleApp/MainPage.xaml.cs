@@ -15,6 +15,21 @@
         public MainPage()
         {
             InitializeComponent();
+            ThemeToolbarItem.Text = ThemeService.Label;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            // The theme may have been changed from a modal sample page.
+            ThemeToolbarItem.Text = ThemeService.Label;
+        }
+
+        private void OnThemeClicked(object sender, EventArgs e)
+        {
+            ThemeService.Cycle();
+            ThemeToolbarItem.Text = ThemeService.Label;
         }
 
         private async void OnChartsButtonClicked(object sender, EventArgs e)
