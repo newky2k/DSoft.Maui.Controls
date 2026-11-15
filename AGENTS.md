@@ -6,7 +6,7 @@ Guidelines for AI agents working in this repository.
 
 **DSoft.Maui.Controls** is a .NET MAUI controls library providing 100% MAUI-based (no platform-specific implementations) reusable UI controls. It is distributed as the `DSoft.Maui.Controls` NuGet package.
 
-- **Target Frameworks:** .NET 9 and .NET 10
+- **Target Frameworks:** .NET 10 and .NET 11
 - **Platforms:** Android 33+, iOS 15+, macOS Catalyst 15+, Windows 10 1803+, Tizen 6.5+
 - **License:** MIT
 
@@ -147,7 +147,7 @@ GitHub Actions (`.github/workflows/`):
 
 Version format used by the release workflow: `2.0.{yyMM}.{run number}` plus `RELEASE_SUFFIX` (empty for a stable version; set it to `-prerelease` in the workflow to publish a prerelease, which also marks the GitHub release as a prerelease).
 
-Both workflows use `windows-latest`, the .NET 10.x SDK and `dotnet workload restore` for the MAUI workloads.
+Both workflows use `windows-latest`, the .NET 10.x and 11.x SDKs and `dotnet workload restore` for the MAUI workloads.
 
 ## Pull Requests
 
