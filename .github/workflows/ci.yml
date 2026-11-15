@@ -21,7 +21,9 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10.x'
+          dotnet-version: |
+            10.x
+            11.x
 
       - name: Install MAUI workloads
         run: dotnet workload restore DSoft.MAUI.Controls.slnx

@@ -4,7 +4,7 @@ description: DSoft.Maui.Controls library conventions, patterns, and controls add
 type: project
 ---
 
-100% MAUI controls library (no native/platform code in controls). Targets .NET 9 and 10, Android/iOS/macOS/Windows.
+100% MAUI controls library (no native/platform code in controls). Targets .NET 10 and 11, Android/iOS/macOS/Windows.
 
 **Why:** Distributed as the `DSoft.Maui.Controls` NuGet package.
 
