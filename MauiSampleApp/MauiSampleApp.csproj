@@ -63,9 +63,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="DSoft.System.Mvvm" Version="3.6.2606.131" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.51" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.130" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.130" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.15" />
 	</ItemGroup>
 
 	<ItemGroup>
